@@ -17,7 +17,7 @@ public:
     unsigned short int TABLESIZE;
     hexStateSpace::color* SPACE; // state spece
     unsigned short int HEXAGONSIZE;
-    explicit HexCanvas(QWidget *parent = nullptr);
+    explicit HexCanvas(QWidget *parent = 0);
     void setStateSpace(hexStateSpace::color* space, unsigned short int tablesize, int hexagonSize);
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
     QPoint flatHexCorner(QPoint &center, unsigned short size, unsigned short i) const;
