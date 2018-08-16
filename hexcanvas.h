@@ -20,9 +20,10 @@ public:
     explicit HexCanvas(QWidget *parent = 0);
     void setStateSpace(hexStateSpace::color* space, unsigned short int tablesize, int hexagonSize);
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
-    QPoint flatHexCorner(QPoint &center, unsigned short size, unsigned short i) const;
+    QSize sizeHint() const Q_DECL_OVERRIDE;
 
-    std::map<unsigned short int, QPoint> hexagonCenterMap;
+    QPoint flatHexCorner(QPoint &center, unsigned short size, unsigned short i) const;
+    //std::map<unsigned short int, QPoint> hexagonCenterMap;
 
 signals:
 

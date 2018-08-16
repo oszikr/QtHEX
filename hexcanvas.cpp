@@ -40,6 +40,15 @@ void HexCanvas::paintEvent(QPaintEvent *event)
     painter.end();
 }
 
+QSize HexCanvas::sizeHint() const
+{
+    double w = 2 * HEXAGONSIZE;
+    double h = std::sqrt(3) * HEXAGONSIZE;
+    return QSize(
+                (w/4*3) * TABLESIZE + (w/4*1),
+                h * TABLESIZE + (TABLESIZE-1) * h/2);
+}
+
 QPoint HexCanvas::flatHexCorner(QPoint& center, unsigned short int size, unsigned short int i) const
 {
     int angle_deg = 60 * i;
