@@ -26,15 +26,15 @@ void HexCanvas::paintEvent(QPaintEvent *event)
         {
             QPoint center(w/2 + j*(w/4*3),
                          (h/2 * TABLESIZE - j*h/2) + (i*h));
-            for(int i = 0; i < 6; i++)
-            {
-                painter.drawLine(flatHexCorner(center, HEXAGONSIZE, i),
-                                 flatHexCorner(center, HEXAGONSIZE, i+1));
-            }
+            Hexagon h(center, HEXAGONSIZE);
+            painter.drawLine(h.a, h.b);
+            painter.drawLine(h.b, h.c);
+            painter.drawLine(h.c, h.d);
+            painter.drawLine(h.d, h.e);
+            painter.drawLine(h.e, h.f);
+            painter.drawLine(h.f, h.a);
         }
     }
-
-
 
     QWidget::paintEvent(event);
     painter.end();
@@ -47,12 +47,4 @@ QSize HexCanvas::sizeHint() const
     return QSize(
                 (w/4*3) * TABLESIZE + (w/4*1),
                 h * TABLESIZE + (TABLESIZE-1) * h/2);
-}
-
-QPoint HexCanvas::flatHexCorner(QPoint& center, unsigned short int size, unsigned short int i) const
-{
-    int angle_deg = 60 * i;
-    double angle_rad = M_PI / 180 * angle_deg;
-    return QPoint(center.x() + size * std::cos(angle_rad),
-                  center.y() + size * std::sin(angle_rad));
 }
