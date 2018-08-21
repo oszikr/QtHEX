@@ -1,7 +1,9 @@
 #include "hexcanvas.h"
 
-HexCanvas::HexCanvas(QWidget *parent) : QWidget(parent), hexagons(0)
+HexCanvas::HexCanvas(QWidget *parent) : QWidget(parent), hexagons(0), pointed(-1)
 {
+    setMouseTrackingEnabledTimer = new QTimer(this);
+    connect(setMouseTrackingEnabledTimer, SIGNAL(timeout()), this, SLOT(setMouseTrackingEnabled()));
 }
 
 void HexCanvas::setStateSpace(hexStateSpace::color* space, unsigned short int tablesize, int hexagonSize)
@@ -32,7 +34,7 @@ void HexCanvas::setStateSpace(hexStateSpace::color* space, unsigned short int ta
         }
     }
 
-    // TODO create borders
+    // create borders
     upBorderPoints.clear();
     dnBorderPoints.clear();
     ltBorderPoints.clear();
@@ -83,6 +85,8 @@ void HexCanvas::setStateSpace(hexStateSpace::color* space, unsigned short int ta
     dnBorderPoints.front().setX( dnBorderPoints.front().x() - 2);
     ltBorderPoints.back().setY( ltBorderPoints.back().y() + 2);
     ltBorderPoints.back().setX( ltBorderPoints.back().x() + 1);
+
+    setMouseTrackingEnabled();
 }
 
 HexCanvas::~HexCanvas()
@@ -95,6 +99,7 @@ HexCanvas::~HexCanvas()
 
 void HexCanvas::paintEvent(QPaintEvent *event)
 {
+    //std::cout << ">>> PaintEvent" << std::endl;
     // paint white canvas
     QPainter painter;
     painter.begin(this);
@@ -128,9 +133,10 @@ void HexCanvas::paintEvent(QPaintEvent *event)
             // drawing hexagon
             QBrush brush;
             brush.setStyle(Qt::SolidPattern);
-            if(color == hexStateSpace::EMPTY) brush.setColor(QColor(226,226,226));
-            else if(color == hexStateSpace::BLUE) brush.setColor(QColor(5,73,188));
-            else if(color == hexStateSpace::RED) brush.setColor(QColor(184,20,9));
+            if(TABLESIZE * i + j == pointed)        brush.setColor(QColor(4, 188, 44));
+            else if(color == hexStateSpace::EMPTY)  brush.setColor(QColor(226,226,226));
+            else if(color == hexStateSpace::BLUE)   brush.setColor(QColor(5,73,188));
+            else if(color == hexStateSpace::RED)    brush.setColor(QColor(184,20,9));
             painter.setBrush(brush);
             painter.drawPolygon(QPolygon(hexagonPoints));
 
@@ -144,9 +150,8 @@ void HexCanvas::paintEvent(QPaintEvent *event)
     painter.end();
 }
 
-void HexCanvas::mouseReleaseEvent(QMouseEvent *event)
+unsigned short int HexCanvas::getHexagonIndex(QPoint hit)
 {
-    QPoint hit(event->x(), event->y());
     for(unsigned short int i = 0; i < TABLESIZE * TABLESIZE; i++)
     {
         Hexagon hex = hexagons[i];
@@ -159,14 +164,34 @@ void HexCanvas::mouseReleaseEvent(QMouseEvent *event)
                     HEXAGONSIZE*v.x()/v_snd,
                     HEXAGONSIZE*v.y()/v_snd
                     );
-        int n_snd = std::sqrt(n.x()*n.x()+n.y()*n.y());
         int n_hex = std::max(
                     abs(n.x()),
                     abs((n.x() + std::sqrt(3)*std::abs(n.y()))/2)
                     );
         if(n_hex > v_snd)
         {
-            std::cout << ">>> Clicked hexagon is: " << i << "." << std::endl;
+            return i;
         }
     }
+    return -1;
+}
+
+void HexCanvas::mouseReleaseEvent(QMouseEvent *event)
+{
+    pointed = getHexagonIndex(QPoint(event->x(), event->y()));
+    //std::cout << ">>> Clicked hexagon is: " << pointed << "." << std::endl;
+}
+
+void HexCanvas::mouseMoveEvent(QMouseEvent *event)
+{
+    pointed = getHexagonIndex(QPoint(event->x(), event->y()));
+    //std::cout << ">>> Pointed hexagon is: " << pointed << "." << std::endl;
+    setMouseTracking(false);
+    setMouseTrackingEnabledTimer->start(100);
+    update();
+}
+
+void HexCanvas::setMouseTrackingEnabled()
+{
+    setMouseTracking(true);
 }
