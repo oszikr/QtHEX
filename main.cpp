@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     std::cout << ">>> THE WINNER IS: "  << winner << std::endl;
 
     HexCanvas hc;
-    hc.setStateSpace(h.space, h.SIZE, 21);
+    hc.setStateSpace(h.space, h.SIZE, 27);
     hc.show();
 
     return a.exec();
