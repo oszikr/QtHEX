@@ -10,6 +10,7 @@ void HexCanvas::setStateSpace(hexStateSpace::color* space, unsigned short int ta
     this->TABLESIZE = tablesize;
     this->HEXAGONSIZE = hexagonSize; //radius
     this->hexagons = new Hexagon[TABLESIZE*TABLESIZE];
+    this->PADDING = 20;
 
     double w = 2 * HEXAGONSIZE;
     double h = std::sqrt(3) * HEXAGONSIZE;
@@ -18,14 +19,16 @@ void HexCanvas::setStateSpace(hexStateSpace::color* space, unsigned short int ta
     {
         for(unsigned short int j = 0; j < TABLESIZE; j++)
         {
-            QPoint center(w/2 + j*(w/4*3),
-                         (h/2 * TABLESIZE - j*h/2) + (i*h));
+            QPoint center(w/2 + j*(w/4*3) + PADDING,
+                         (h/2 * TABLESIZE - j*h/2) + (i*h) + PADDING);
             hexagons[TABLESIZE * i + j] = Hexagon(center, HEXAGONSIZE);
 
             hexagons[TABLESIZE * i + j].mergeWithUp(TABLESIZE, TABLESIZE * i + j, hexagons);
             hexagons[TABLESIZE * i + j].mergeWithLt(TABLESIZE, TABLESIZE * i + j, hexagons);
         }
     }
+
+    // TODO create borders
 }
 
 HexCanvas::~HexCanvas()
@@ -38,11 +41,16 @@ HexCanvas::~HexCanvas()
 
 void HexCanvas::paintEvent(QPaintEvent *event)
 {
+    // paint white canvas
     QPainter painter;
     painter.begin(this);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.fillRect(event->rect(), Qt::white);
 
+    // paint borders
+    // TODO
+
+    // paint hexagons
     for(unsigned short int i = 0; i < TABLESIZE; i++)
     {
         for(unsigned short int j = 0; j < TABLESIZE; j++)
@@ -60,9 +68,9 @@ void HexCanvas::paintEvent(QPaintEvent *event)
             // drawing hexagon
             QBrush brush;
             brush.setStyle(Qt::SolidPattern);
-            if(color == hexStateSpace::EMPTY) brush.setColor(Qt::gray);
-            else if(color == hexStateSpace::BLUE) brush.setColor(Qt::blue);
-            else if(color == hexStateSpace::RED) brush.setColor(Qt::red);
+            if(color == hexStateSpace::EMPTY) brush.setColor(QColor(226,226,226));
+            else if(color == hexStateSpace::BLUE) brush.setColor(QColor(5,73,188));
+            else if(color == hexStateSpace::RED) brush.setColor(QColor(184,20,9));
             painter.setBrush(brush);
             painter.drawPolygon(QPolygon(hexagonPoints));
 
@@ -81,18 +89,16 @@ QSize HexCanvas::sizeHint() const
     double w = 2 * HEXAGONSIZE;
     double h = std::sqrt(3) * HEXAGONSIZE;
     return QSize(
-                (w/4*3) * TABLESIZE + (w/4*1),
-                h * TABLESIZE + (TABLESIZE-1) * h/2);
+                (w/4*3) * TABLESIZE + (w/4*1) + 2*PADDING,
+                h * TABLESIZE + (TABLESIZE-1) * h/2 + 2*PADDING);
 }
 
 void HexCanvas::mouseReleaseEvent(QMouseEvent *event)
 {
     QPoint hit(event->x(), event->y());
-    //std::cout << "Clicked: " << hit.x() << ", " << hit.y() << std::endl;
     for(unsigned short int i = 0; i < TABLESIZE * TABLESIZE; i++)
     {
         Hexagon hex = hexagons[i];
-
         QVector2D v(
                     hit.x() - hex.center.x(),
                     hit.y() - hex.center.y()
@@ -103,23 +109,10 @@ void HexCanvas::mouseReleaseEvent(QMouseEvent *event)
                     HEXAGONSIZE*v.y()/v_snd
                     );
         int n_snd = std::sqrt(n.x()*n.x()+n.y()*n.y());
-        int n_inf = std::max(
-                    abs(v.x()),
-                    abs(v.y())
-                    );
         int n_hex = std::max(
                     abs(n.x()),
                     abs((n.x() + std::sqrt(3)*std::abs(n.y()))/2)
                     );
-        /*
-        std::cout << "\t" << i << ". hexagon: " << hex.center.x() << ", " << hex.center.y() << std::endl;
-        std::cout << "\t" << "v      : " << v.x() << ", " << v.y() << std::endl;
-        std::cout << "\t" << "||v||^2: " << v_snd << std::endl;
-        std::cout << "\t" << "n      : " << n.x() << ", " << n.y() << std::endl;
-        std::cout << "\t" << "||n||^2: " << n_snd << std::endl;
-        std::cout << "\t" << "||n||^i: " << n_inf << std::endl;
-        std::cout << "\t" << "||n||^h: " << n_hex << std::endl;
-        */
         if(n_hex > v_snd)
         {
             std::cout << ">>> Clicked hexagon is: " << i << "." << std::endl;

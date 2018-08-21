@@ -22,6 +22,7 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h \
     hextable.h \
     hexstatespace.h \
-    hexcanvas.h
+    hexcanvas.h \
+    hexagon.hpp
 
 FORMS    += mainwindow.ui
