@@ -29,6 +29,66 @@ void HexCanvas::setStateSpace(hexStateSpace::color* space, unsigned short int ta
     }
 
     // TODO create borders
+    upBorderPoints.clear();
+    dnBorderPoints.clear();
+    ltBorderPoints.clear();
+    rtBorderPoints.clear();
+    unsigned short int i = 0;
+    for(unsigned short int j = 0; j < TABLESIZE; j++)
+    {
+        QPoint center(w/2 + j*(w/4*3) + PADDING - 1,
+                     (h/2 * TABLESIZE - j*h/2) + (i*h) + PADDING - 3);
+        Hexagon hexagon(center, HEXAGONSIZE);
+        upBorderPoints.push_back(hexagon.b);
+        upBorderPoints.push_back(hexagon.c);
+    }
+    i = TABLESIZE - 1;
+    for(unsigned short int j = 0; j < TABLESIZE; j++)
+    {
+        QPoint center(w/2 + j*(w/4*3) + PADDING + 1,
+                     (h/2 * TABLESIZE - j*h/2) + (i*h) + PADDING + 3);
+        Hexagon hexagon(center, HEXAGONSIZE);
+        dnBorderPoints.push_back(hexagon.f);
+        dnBorderPoints.push_back(hexagon.e);
+    }
+    unsigned short int j = 0;
+    for(unsigned short int i = 0; i < TABLESIZE; i++)
+    {
+        QPoint center(w/2 + j*(w/4*3) + PADDING - 3,
+                     (h/2 * TABLESIZE - j*h/2) + (i*h) + PADDING);
+        Hexagon hexagon(center, HEXAGONSIZE);
+        ltBorderPoints.push_back(hexagon.a);
+        ltBorderPoints.push_back(hexagon.f);
+    }
+    j = TABLESIZE - 1;
+    for(unsigned short int i = 0; i < TABLESIZE; i++)
+    {
+        QPoint center(w/2 + j*(w/4*3) + PADDING + 3,
+                     (h/2 * TABLESIZE - j*h/2) + (i*h) + PADDING);
+        Hexagon hexagon(center, HEXAGONSIZE);
+        rtBorderPoints.push_back(hexagon.c);
+        rtBorderPoints.push_back(hexagon.d);
+    }
+    upBorderPoints.push_front(ltBorderPoints.first());
+    rtBorderPoints.push_back(dnBorderPoints.last());
+
+    i = 0;
+    j = TABLESIZE - 1;
+    Hexagon UpRtBigHexagon(
+                QPoint(w/2 + j*(w/4*3) + PADDING,
+                             (h/2 * TABLESIZE - j*h/2) + (i*h) + PADDING),
+                HEXAGONSIZE + 4);
+    upBorderPoints.push_back(UpRtBigHexagon.c);
+    rtBorderPoints.push_front(UpRtBigHexagon.c);
+
+    i = TABLESIZE - 1;
+    j = 0;
+    Hexagon DnLtBigHexagon(
+                QPoint(w/2 + j*(w/4*3) + PADDING,
+                             (h/2 * TABLESIZE - j*h/2) + (i*h) + PADDING),
+                HEXAGONSIZE + 4);
+    dnBorderPoints.push_front(DnLtBigHexagon.f);
+    ltBorderPoints.push_back(DnLtBigHexagon.f);
 }
 
 HexCanvas::~HexCanvas()
@@ -48,7 +108,13 @@ void HexCanvas::paintEvent(QPaintEvent *event)
     painter.fillRect(event->rect(), Qt::white);
 
     // paint borders
-    // TODO
+    painter.setPen(QColor(5,73,188));
+    painter.drawPolyline(upBorderPoints);
+    painter.drawPolyline(dnBorderPoints);
+
+    painter.setPen(QColor(184,20,9));
+    painter.drawPolyline(ltBorderPoints);
+    painter.drawPolyline(rtBorderPoints);
 
     // paint hexagons
     for(unsigned short int i = 0; i < TABLESIZE; i++)

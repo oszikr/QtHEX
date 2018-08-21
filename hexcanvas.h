@@ -19,12 +19,18 @@ public:
     hexStateSpace::color* SPACE; // state spece
     unsigned short int HEXAGONSIZE;
     unsigned short int PADDING;
+    QVector<QPoint> upBorderPoints;
+    QVector<QPoint> dnBorderPoints;
+    QVector<QPoint> ltBorderPoints;
+    QVector<QPoint> rtBorderPoints;
+
     explicit HexCanvas(QWidget *parent = 0);
     ~HexCanvas();
     void setStateSpace(hexStateSpace::color* space, unsigned short int tablesize, int hexagonSize);
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
     QSize sizeHint() const Q_DECL_OVERRIDE;    
     void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    //void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
 
     Hexagon* hexagons;
 
