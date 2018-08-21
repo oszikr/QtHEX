@@ -30,7 +30,7 @@ public:
     explicit HexCanvas(QWidget *parent = 0);
     ~HexCanvas() Q_DECL_OVERRIDE;
     void setStateSpace(hexStateSpace::color* space, unsigned short int tablesize, int hexagonSize);
-    unsigned short int getHexagonIndex(QPoint hit);
+    short int getHexagonIndex(QPoint hit);
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
     void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;

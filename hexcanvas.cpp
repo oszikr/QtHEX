@@ -150,7 +150,7 @@ void HexCanvas::paintEvent(QPaintEvent *event)
     painter.end();
 }
 
-unsigned short int HexCanvas::getHexagonIndex(QPoint hit)
+short int HexCanvas::getHexagonIndex(QPoint hit)
 {
     for(unsigned short int i = 0; i < TABLESIZE * TABLESIZE; i++)
     {
@@ -179,15 +179,15 @@ unsigned short int HexCanvas::getHexagonIndex(QPoint hit)
 void HexCanvas::mouseReleaseEvent(QMouseEvent *event)
 {
     pointed = getHexagonIndex(QPoint(event->x(), event->y()));
-    //std::cout << ">>> Clicked hexagon is: " << pointed << "." << std::endl;
+    std::cout << ">>> Clicked hexagon is: " << pointed << "." << std::endl;
 }
 
 void HexCanvas::mouseMoveEvent(QMouseEvent *event)
 {
     pointed = getHexagonIndex(QPoint(event->x(), event->y()));
-    //std::cout << ">>> Pointed hexagon is: " << pointed << "." << std::endl;
+    //std::cout << ">>> Pointed hexagon is: " << event->x() << "\t" << event->y() << "." << std::endl;
     setMouseTracking(false);
-    setMouseTrackingEnabledTimer->start(100);
+    setMouseTrackingEnabledTimer->start(50);
     update();
 }
 
