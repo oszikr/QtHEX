@@ -39,22 +39,36 @@ HexCanvas::~HexCanvas()
 void HexCanvas::paintEvent(QPaintEvent *event)
 {
     QPainter painter;
-    painter.setRenderHint(QPainter::Antialiasing);
     painter.begin(this);
+    painter.setRenderHint(QPainter::Antialiasing);
     painter.fillRect(event->rect(), Qt::white);
 
     for(unsigned short int i = 0; i < TABLESIZE; i++)
     {
         for(unsigned short int j = 0; j < TABLESIZE; j++)
         {
-            Hexagon h = hexagons[TABLESIZE * i + j];
-            painter.drawLine(h.a, h.b);
-            painter.drawLine(h.b, h.c);
-            painter.drawLine(h.c, h.d);
-            painter.drawLine(h.d, h.e);
-            painter.drawLine(h.e, h.f);
-            painter.drawLine(h.f, h.a);
-            //if(i+i == 0) painter.drawEllipse(h.center.x()-HEXAGONSIZE, h.center.y()-HEXAGONSIZE, 2*HEXAGONSIZE, 2*HEXAGONSIZE);
+            hexStateSpace::color color = SPACE[TABLESIZE * i + j];
+            Hexagon hexagon = hexagons[TABLESIZE * i + j];
+            QVector<QPoint> hexagonPoints;
+            hexagonPoints.push_back(hexagon.a);
+            hexagonPoints.push_back(hexagon.b);
+            hexagonPoints.push_back(hexagon.c);
+            hexagonPoints.push_back(hexagon.d);
+            hexagonPoints.push_back(hexagon.e);
+            hexagonPoints.push_back(hexagon.f);
+
+            // drawing hexagon
+            QBrush brush;
+            brush.setStyle(Qt::SolidPattern);
+            if(color == hexStateSpace::EMPTY) brush.setColor(Qt::gray);
+            else if(color == hexStateSpace::BLUE) brush.setColor(Qt::blue);
+            else if(color == hexStateSpace::RED) brush.setColor(Qt::red);
+            painter.setBrush(brush);
+            painter.drawPolygon(QPolygon(hexagonPoints));
+
+            // drawing grid
+            painter.setPen(Qt::white);
+            painter.drawPolygon(QPolygon(hexagonPoints));
         }
     }
 
