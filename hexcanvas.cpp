@@ -15,6 +15,10 @@ void HexCanvas::setStateSpace(hexStateSpace::color* space, unsigned short int ta
     double w = 2 * HEXAGONSIZE;
     double h = std::sqrt(3) * HEXAGONSIZE;
 
+    setFixedSize(QSize(
+                (w/4*3) * TABLESIZE + (w/4*1) + 2*PADDING,
+                (h*TABLESIZE) + (h/2*(TABLESIZE-1)) + 2*PADDING));
+
     for(unsigned short int i = 0; i < TABLESIZE; i++)
     {
         for(unsigned short int j = 0; j < TABLESIZE; j++)
@@ -77,26 +81,8 @@ void HexCanvas::setStateSpace(hexStateSpace::color* space, unsigned short int ta
     rtBorderPoints.front().setX( rtBorderPoints.front().x() - 1);
 
     dnBorderPoints.front().setX( dnBorderPoints.front().x() - 2);
-    //ltBorderPoints.back().setY( ltBorderPoints.back().y() + 2);
-    //ltBorderPoints.back().setX( ltBorderPoints.back().x() + 1);
-
-    /*i = 0;
-    j = TABLESIZE - 1;
-    Hexagon UpRtBigHexagon(
-                QPoint(w/2 + j*(w/4*3) + PADDING,
-                             (h/2 * TABLESIZE - j*h/2) + (i*h) + PADDING),
-                HEXAGONSIZE + 3);
-    upBorderPoints.push_back(UpRtBigHexagon.c);
-    rtBorderPoints.push_front(UpRtBigHexagon.c);
-
-    i = TABLESIZE - 1;
-    j = 0;
-    Hexagon DnLtBigHexagon(
-                QPoint(w/2 + j*(w/4*3) + PADDING,
-                             (h/2 * TABLESIZE - j*h/2) + (i*h) + PADDING),
-                HEXAGONSIZE + 3);
-    dnBorderPoints.push_front(DnLtBigHexagon.f);
-    ltBorderPoints.push_back(DnLtBigHexagon.f);*/
+    ltBorderPoints.back().setY( ltBorderPoints.back().y() + 2);
+    ltBorderPoints.back().setX( ltBorderPoints.back().x() + 1);
 }
 
 HexCanvas::~HexCanvas()
@@ -156,16 +142,6 @@ void HexCanvas::paintEvent(QPaintEvent *event)
 
     QWidget::paintEvent(event);
     painter.end();
-}
-
-QSize HexCanvas::sizeHint() const
-{
-    double w = 2 * HEXAGONSIZE;
-    double h = std::sqrt(3) * HEXAGONSIZE;
-    return QSize(
-                (w/4*3) * TABLESIZE + (w/4*1) + 2*PADDING,
-                //h * TABLESIZE + (TABLESIZE-1) * h/2 + 2*PADDING);
-                (h*TABLESIZE) + (h*TABLESIZE) + 2*PADDING);
 }
 
 void HexCanvas::mouseReleaseEvent(QMouseEvent *event)

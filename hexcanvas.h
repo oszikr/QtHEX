@@ -28,7 +28,6 @@ public:
     ~HexCanvas();
     void setStateSpace(hexStateSpace::color* space, unsigned short int tablesize, int hexagonSize);
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
-    QSize sizeHint() const Q_DECL_OVERRIDE;    
     void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     //void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
 
