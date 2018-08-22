@@ -16,11 +16,13 @@ class HexCanvas : public QWidget
 {
     Q_OBJECT
 public:
-    unsigned short int TABLESIZE;
-    hexStateSpace::color* SPACE; // state spece
+
     unsigned short int HEXAGONSIZE; // hexagon's radius
     unsigned short int PADDING;
     short int pointed;
+    Hexagon* hexagons;
+    double w, h;
+    hexStateSpace* stateSpace; // state spece
     QVector<QPoint> upBorderPoints;
     QVector<QPoint> dnBorderPoints;
     QVector<QPoint> ltBorderPoints;
@@ -29,13 +31,11 @@ public:
 
     explicit HexCanvas(QWidget *parent = 0);
     ~HexCanvas() Q_DECL_OVERRIDE;
-    void setStateSpace(hexStateSpace& space);
+    void setStateSpace(hexStateSpace* stateSpace);
     short int getHexagonIndex(QPoint hit);
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
     void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
-
-    Hexagon* hexagons;
 
 signals:
 

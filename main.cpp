@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     //hexStateSpace::color winner;
 
     HexCanvas hc;
-    hc.setStateSpace(stateSpace);
+    hc.setStateSpace(&stateSpace);
     hc.show();
 
     return a.exec();
