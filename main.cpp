@@ -12,11 +12,11 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    hexStateSpace h;
-    hexStateSpace::color winner;
+    hexStateSpace stateSpace;
+    //hexStateSpace::color winner;
 
     HexCanvas hc;
-    hc.setStateSpace(h.space, h.SIZE, 27);
+    hc.setStateSpace(stateSpace);
     hc.show();
 
     return a.exec();

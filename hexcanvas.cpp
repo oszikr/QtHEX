@@ -1,16 +1,15 @@
 #include "hexcanvas.h"
 
-HexCanvas::HexCanvas(QWidget *parent) : QWidget(parent), hexagons(0), pointed(-1)
+HexCanvas::HexCanvas(QWidget *parent) : QWidget(parent), HEXAGONSIZE(27), pointed(-1), hexagons(0)
 {
     setMouseTrackingEnabledTimer = new QTimer(this);
     connect(setMouseTrackingEnabledTimer, SIGNAL(timeout()), this, SLOT(setMouseTrackingEnabled()));
 }
 
-void HexCanvas::setStateSpace(hexStateSpace::color* space, unsigned short int tablesize, int hexagonSize)
+void HexCanvas::setStateSpace(hexStateSpace& space)
 {
-    this->SPACE = space;
-    this->TABLESIZE = tablesize;
-    this->HEXAGONSIZE = hexagonSize; //radius
+    this->SPACE = space.space;
+    this->TABLESIZE = space.SIZE;
     this->hexagons = new Hexagon[TABLESIZE*TABLESIZE];
     this->PADDING = 20;
 
