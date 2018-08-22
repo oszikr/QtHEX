@@ -1,9 +1,8 @@
 #include "hexcanvas.h"
 
-HexCanvas::HexCanvas(QWidget *parent) : QWidget(parent), HEXAGONSIZE(27), PADDING(20), pointed(-1), hexagons(0)
+HexCanvas::HexCanvas(QWidget *parent) : QWidget(parent), HEXAGONSIZE(27), PADDING(20), pointed(-1),
+    HEXAGONWIDTH(2 * HEXAGONSIZE), HEXAGONHEIGHT(std::sqrt(3) * HEXAGONSIZE)
 {
-    w = 2 * HEXAGONSIZE;
-    h = std::sqrt(3) * HEXAGONSIZE;
     setMouseTrackingEnabledTimer = new QTimer(this);
     connect(setMouseTrackingEnabledTimer, SIGNAL(timeout()), this, SLOT(setMouseTrackingEnabled()));
 }
@@ -11,19 +10,19 @@ HexCanvas::HexCanvas(QWidget *parent) : QWidget(parent), HEXAGONSIZE(27), PADDIN
 void HexCanvas::setStateSpace(hexStateSpace* stateSpace)
 {
     this->stateSpace = stateSpace;
-    this->hexagons = new Hexagon[stateSpace->SIZE*stateSpace->SIZE];
+    this->hexagons.clear();
 
     setFixedSize(QSize(
-                (w/4*3) * stateSpace->SIZE + (w/4*1) + 2*PADDING,
-                (h*stateSpace->SIZE) + (h/2*(stateSpace->SIZE-1)) + 2*PADDING));
+                (HEXAGONWIDTH/4*3) * stateSpace->SIZE + (HEXAGONWIDTH/4*1) + 2*PADDING,
+                (HEXAGONHEIGHT*stateSpace->SIZE) + (HEXAGONHEIGHT/2*(stateSpace->SIZE-1)) + 2*PADDING));
 
     for(unsigned short int i = 0; i < stateSpace->SIZE; i++)
     {
         for(unsigned short int j = 0; j < stateSpace->SIZE; j++)
         {
-            QPoint center(w/2 + j*(w/4*3) + PADDING,
-                         (h/2 * stateSpace->SIZE - j*h/2) + (i*h) + PADDING);
-            hexagons[stateSpace->SIZE * i + j] = Hexagon(center, HEXAGONSIZE);
+            QPoint center(HEXAGONWIDTH/2 + j*(HEXAGONWIDTH/4*3) + PADDING,
+                         (HEXAGONHEIGHT/2 * stateSpace->SIZE - j*HEXAGONHEIGHT/2) + (i*HEXAGONHEIGHT) + PADDING);
+            hexagons.push_back(Hexagon(center, HEXAGONSIZE)); //hexagons[stateSpace->SIZE * i + j]
 
             hexagons[stateSpace->SIZE * i + j].mergeWithUp(stateSpace->SIZE, stateSpace->SIZE * i + j, hexagons);
             hexagons[stateSpace->SIZE * i + j].mergeWithLt(stateSpace->SIZE, stateSpace->SIZE * i + j, hexagons);
@@ -38,8 +37,8 @@ void HexCanvas::setStateSpace(hexStateSpace* stateSpace)
     unsigned short int i = 0;
     for(unsigned short int j = 0; j < stateSpace->SIZE; j++)
     {
-        QPoint center(w/2 + j*(w/4*3) + PADDING - 1,
-                     (h/2 * stateSpace->SIZE - j*h/2) + (i*h) + PADDING - 3);
+        QPoint center(HEXAGONWIDTH/2 + j*(HEXAGONWIDTH/4*3) + PADDING - 1,
+                     (HEXAGONHEIGHT/2 * stateSpace->SIZE - j*HEXAGONHEIGHT/2) + (i*HEXAGONHEIGHT) + PADDING - 3);
         Hexagon hexagon(center, HEXAGONSIZE);
         upBorderPoints.push_back(hexagon.b);
         upBorderPoints.push_back(hexagon.c);
@@ -47,8 +46,8 @@ void HexCanvas::setStateSpace(hexStateSpace* stateSpace)
     i = stateSpace->SIZE - 1;
     for(unsigned short int j = 0; j < stateSpace->SIZE; j++)
     {
-        QPoint center(w/2 + j*(w/4*3) + PADDING + 1,
-                     (h/2 * stateSpace->SIZE - j*h/2) + (i*h) + PADDING + 3);
+        QPoint center(HEXAGONWIDTH/2 + j*(HEXAGONWIDTH/4*3) + PADDING + 1,
+                     (HEXAGONHEIGHT/2 * stateSpace->SIZE - j*HEXAGONHEIGHT/2) + (i*HEXAGONHEIGHT) + PADDING + 3);
         Hexagon hexagon(center, HEXAGONSIZE);
         dnBorderPoints.push_back(hexagon.f);
         dnBorderPoints.push_back(hexagon.e);
@@ -56,8 +55,8 @@ void HexCanvas::setStateSpace(hexStateSpace* stateSpace)
     unsigned short int j = 0;
     for(unsigned short int i = 0; i < stateSpace->SIZE; i++)
     {
-        QPoint center(w/2 + j*(w/4*3) + PADDING - 3,
-                     (h/2 * stateSpace->SIZE - j*h/2) + (i*h) + PADDING);
+        QPoint center(HEXAGONWIDTH/2 + j*(HEXAGONWIDTH/4*3) + PADDING - 3,
+                     (HEXAGONHEIGHT/2 * stateSpace->SIZE - j*HEXAGONHEIGHT/2) + (i*HEXAGONHEIGHT) + PADDING);
         Hexagon hexagon(center, HEXAGONSIZE);
         ltBorderPoints.push_back(hexagon.a);
         ltBorderPoints.push_back(hexagon.f);
@@ -65,8 +64,8 @@ void HexCanvas::setStateSpace(hexStateSpace* stateSpace)
     j = stateSpace->SIZE - 1;
     for(unsigned short int i = 0; i < stateSpace->SIZE; i++)
     {
-        QPoint center(w/2 + j*(w/4*3) + PADDING + 3,
-                     (h/2 * stateSpace->SIZE - j*h/2) + (i*h) + PADDING);
+        QPoint center(HEXAGONWIDTH/2 + j*(HEXAGONWIDTH/4*3) + PADDING + 3,
+                     (HEXAGONHEIGHT/2 * stateSpace->SIZE - j*HEXAGONHEIGHT/2) + (i*HEXAGONHEIGHT) + PADDING);
         Hexagon hexagon(center, HEXAGONSIZE);
         rtBorderPoints.push_back(hexagon.c);
         rtBorderPoints.push_back(hexagon.d);
@@ -86,12 +85,7 @@ void HexCanvas::setStateSpace(hexStateSpace* stateSpace)
 }
 
 HexCanvas::~HexCanvas()
-{
-    if(hexagons != 0)
-    {
-        delete[] hexagons;
-    }
-}
+{}
 
 void HexCanvas::paintEvent(QPaintEvent *event)
 {

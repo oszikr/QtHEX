@@ -20,8 +20,8 @@ public:
     unsigned short int HEXAGONSIZE; // hexagon's radius
     unsigned short int PADDING;
     short int pointed;
-    Hexagon* hexagons;
-    double w, h;
+    QVector<Hexagon> hexagons;
+    double HEXAGONWIDTH, HEXAGONHEIGHT;
     hexStateSpace* stateSpace; // state spece
     QVector<QPoint> upBorderPoints;
     QVector<QPoint> dnBorderPoints;

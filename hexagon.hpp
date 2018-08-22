@@ -28,14 +28,14 @@ struct Hexagon
     QPoint center;
     QPoint a, b, c, d, e, f;
 
-    inline void mergeWithUp(unsigned short int tablesize, short int cursor, Hexagon* hexagons)
+    inline void mergeWithUp(unsigned short int tablesize, short int cursor, QVector<Hexagon> hexagons)
     {
         cursor -= tablesize;
         if(!(cursor >= 0 && cursor < tablesize * tablesize)) return;
         b = hexagons[cursor].f;
         c = hexagons[cursor].e;
     }
-    inline void mergeWithLt(unsigned short int tablesize, short int cursor, Hexagon* hexagons)
+    inline void mergeWithLt(unsigned short int tablesize, short int cursor, QVector<Hexagon> hexagons)
     {
         if(cursor % tablesize == 0) return;
         cursor -= 1;
