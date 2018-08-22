@@ -74,6 +74,21 @@ std::ostream& operator<<(std::ostream& os, const hexStateSpace& obj)
     return os;
 }
 
+unsigned short int hexStateSpace::getSize() const
+{
+    return SIZE;
+}
+
+unsigned short int hexStateSpace::getLength() const
+{
+    return LENGTH;
+}
+
+hexStateSpace::color* hexStateSpace::getSpace() const
+{
+    return space;
+}
+
 hexStateSpace::color hexStateSpace::get(unsigned short int i, unsigned short int j) const
 {
     return space[SIZE * i + j];
@@ -84,16 +99,15 @@ hexStateSpace::color hexStateSpace::get(unsigned short int i) const
     return space[i];
 }
 
-
 void hexStateSpace::set(unsigned short int i, unsigned short int j, color value)
 {
-    lastField = (short int)(SIZE * i + j);
+    lastField = (SIZE * i + j);
     space[lastField] = value;
 }
 
 void hexStateSpace::set(unsigned short int i, color value)
 {
-    lastField = (short int)i;
+    lastField = i;
     space[lastField] = value;
 }
 

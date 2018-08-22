@@ -28,11 +28,15 @@ public:
     QVector<QPoint> ltBorderPoints;
     QVector<QPoint> rtBorderPoints;
     QTimer* setMouseTrackingEnabledTimer;
+    hexStateSpace::color player;
 
     explicit HexCanvas(QWidget *parent = 0);
     ~HexCanvas() Q_DECL_OVERRIDE;
+
     void setStateSpace(hexStateSpace* stateSpace);
     short int getHexagonIndex(QPoint hit);
+    hexStateSpace::color getPlayerNextPlayer();
+
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
     void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
