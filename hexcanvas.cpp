@@ -81,6 +81,17 @@ void HexCanvas::setStateSpace(hexStateSpace* stateSpace)
     ltBorderPoints.back().setY( ltBorderPoints.back().y() + 2);
     ltBorderPoints.back().setX( ltBorderPoints.back().x() + 1);
 
+    // func buttons
+    QPoint tmp = hexagons[hexagons.size() - stateSpace->getSize()].center;
+    tmp.setX(tmp.x() + 2*HEXAGONSIZE);
+    nextInfoBtn = Hexagon(tmp, HEXAGONSIZE);
+    tmp.setX(tmp.x() + 2*HEXAGONSIZE);
+    prevBtn = Hexagon(tmp, HEXAGONSIZE);
+    tmp.setX(tmp.x() + 2*HEXAGONSIZE);
+    hintBtn = Hexagon(tmp, HEXAGONSIZE);
+    tmp.setX(tmp.x() + 2*HEXAGONSIZE);
+    clearBtn = Hexagon(tmp, HEXAGONSIZE);
+
     setMouseTrackingEnabled();
 }
 
@@ -186,6 +197,27 @@ short int HexCanvas::getHexagonIndex(QPoint hit)
     return -1;
 }
 
+bool HexCanvas::isHex(QPoint hit, Hexagon hex)
+{
+    QVector2D v(
+                hit.x() - hex.center.x(),
+                hit.y() - hex.center.y()
+                );
+    int v_snd = std::sqrt(v.x()*v.x()+v.y()*v.y());
+    QVector2D n(
+                HEXAGONSIZE*v.x()/v_snd,
+                HEXAGONSIZE*v.y()/v_snd
+                );
+    int n_hex = std::max(
+                abs(n.x()),
+                abs((n.x() + std::sqrt(3)*std::abs(n.y()))/2)
+                );
+    if(n_hex > v_snd)
+        return true;
+    else
+        return false;
+}
+
 void HexCanvas::mouseReleaseEvent(QMouseEvent *event)
 {
     pointed = getHexagonIndex(QPoint(event->x(), event->y()));
@@ -196,6 +228,7 @@ void HexCanvas::mouseReleaseEvent(QMouseEvent *event)
         getPlayerNextPlayer();
         update();
     }
+
 }
 
 void HexCanvas::mouseMoveEvent(QMouseEvent *event)

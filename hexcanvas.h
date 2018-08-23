@@ -29,12 +29,17 @@ public:
     QVector<QPoint> rtBorderPoints;
     QTimer* setMouseTrackingEnabledTimer;
     hexStateSpace::color player;
+    Hexagon hintBtn;
+    Hexagon nextInfoBtn;
+    Hexagon prevBtn;
+    Hexagon clearBtn;
 
     explicit HexCanvas(QWidget *parent = 0);
     ~HexCanvas() Q_DECL_OVERRIDE;
 
     void setStateSpace(hexStateSpace* stateSpace);
     short int getHexagonIndex(QPoint hit);
+    bool isHex(QPoint hit, Hexagon hex);
     hexStateSpace::color getPlayerNextPlayer();
 
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
