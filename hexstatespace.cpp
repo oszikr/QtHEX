@@ -74,6 +74,11 @@ std::ostream& operator<<(std::ostream& os, const hexStateSpace& obj)
     return os;
 }
 
+short int hexStateSpace::getLast() const
+{
+    return lastField;
+}
+
 unsigned short int hexStateSpace::getSize() const
 {
     return SIZE;
@@ -117,6 +122,11 @@ void hexStateSpace::clear()
     {
         space[i] = EMPTY;
     }
+}
+
+void hexStateSpace::undo()
+{
+    space[lastField] = EMPTY;
 }
 
 hexStateSpace::color hexStateSpace::winner() const

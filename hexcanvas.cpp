@@ -262,17 +262,21 @@ void HexCanvas::setMouseTrackingEnabled()
 
 void HexCanvas::hint()
 {
-    std::cout << ">>> Clicked hexagon is: " << "hint" << "." << std::endl;
+    std::cout << "Hit is not implemented yet." << std::endl;
 }
 
 void HexCanvas::nextInfo()
 {
-    std::cout << ">>> Clicked hexagon is: " << "nextInfo" << "." << std::endl;
+    std::cout << "The next player is the " << (player == hexStateSpace::BLUE ? "\e[0;34mBlue" : "\e[0;31mRed") << "\e[m." << std::endl;
 }
 
 void HexCanvas::prev()
 {
-    std::cout << ">>> Clicked hexagon is: " << "prev" << "." << std::endl;
+    if(stateSpace->getLast() == -1) return;
+    if(stateSpace->get(stateSpace->getLast()) == hexStateSpace::EMPTY) return;
+    stateSpace->set(stateSpace->getLast(), hexStateSpace::EMPTY);
+    getPlayerNextPlayer();
+    update();
 }
 
 void HexCanvas::clear()

@@ -19,11 +19,13 @@ public:
     unsigned short int getLength() const; // count of fields
     color* getSpace() const;
 
+    short int getLast() const;
     color get(unsigned short int i, unsigned short int j) const;
     color get(unsigned short int i) const;
     void set(unsigned short i, unsigned short j, color value);
     void set(unsigned short i, color value);
     void clear();
+    void undo();
 
     color winner() const;
     color depthFirst(color* routeColoring, bool *edges, short int cursor) const;
