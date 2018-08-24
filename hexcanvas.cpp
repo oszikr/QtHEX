@@ -82,14 +82,22 @@ void HexCanvas::setStateSpace(hexStateSpace* stateSpace)
     ltBorderPoints.back().setX( ltBorderPoints.back().x() + 1);
 
     // func buttons
-    QPoint tmp = hexagons[hexagons.size() - stateSpace->getSize()].center;
-    tmp.setX(tmp.x() + 2*HEXAGONSIZE);
+    /*QPoint tmp = hexagons[hexagons.size() - stateSpace->getSize()].center;
+    tmp.setX(tmp.x() + 6*HEXAGONSIZE);
     nextInfoBtn = Hexagon(tmp, HEXAGONSIZE);
-    tmp.setX(tmp.x() + 2*HEXAGONSIZE);
+    tmp.setX(tmp.x() + 3*HEXAGONSIZE);
     prevBtn = Hexagon(tmp, HEXAGONSIZE);
-    tmp.setX(tmp.x() + 2*HEXAGONSIZE);
+    tmp.setX(tmp.x() + 3*HEXAGONSIZE);
     hintBtn = Hexagon(tmp, HEXAGONSIZE);
-    tmp.setX(tmp.x() + 2*HEXAGONSIZE);
+    tmp.setX(tmp.x() + 3*HEXAGONSIZE);
+    clearBtn = Hexagon(tmp, HEXAGONSIZE);*/
+    QPoint tmp(hexagons[0].center.x(), hexagons[stateSpace->getSize()-1].center.y());
+    nextInfoBtn = Hexagon(tmp, HEXAGONSIZE);
+    tmp.setX(tmp.x() + 3 * HEXAGONSIZE);
+    hintBtn = Hexagon(tmp, HEXAGONSIZE);
+    tmp.setX(tmp.x() + 3 * HEXAGONSIZE);
+    prevBtn = Hexagon(tmp, HEXAGONSIZE);
+    tmp.setX(tmp.x() + 3 * HEXAGONSIZE);
     clearBtn = Hexagon(tmp, HEXAGONSIZE);
 
     setMouseTrackingEnabled();
@@ -133,42 +141,54 @@ void HexCanvas::paintEvent(QPaintEvent *event)
         {
             hexStateSpace::color color = stateSpace->getSpace()[stateSpace->getSize() * i + j];
             Hexagon hexagon = hexagons[stateSpace->getSize() * i + j];
-            QVector<QPoint> hexagonPoints;
-            hexagonPoints.push_back(hexagon.a);
-            hexagonPoints.push_back(hexagon.b);
-            hexagonPoints.push_back(hexagon.c);
-            hexagonPoints.push_back(hexagon.d);
-            hexagonPoints.push_back(hexagon.e);
-            hexagonPoints.push_back(hexagon.f);
-
-            // drawing hexagon
-            QBrush brush;
-            brush.setStyle(Qt::SolidPattern);
+            QColor qcolor;
             if(color == hexStateSpace::BLUE)
-                brush.setColor(QColor(5,73,188));
+                qcolor = QColor(5,73,188);
             else if(color == hexStateSpace::RED)
-                brush.setColor(QColor(184,20,9));
+                qcolor = QColor(184,20,9);
             else if(stateSpace->getSize() * i + j == pointed)
             {
                 if(player == hexStateSpace::BLUE)
-                    brush.setColor(QColor(5,73,188));
+                    qcolor = QColor(5,73,188);
                 else
-                    brush.setColor(QColor(184,20,9));
+                    qcolor = QColor(184,20,9);
             }
             else if(color == hexStateSpace::EMPTY)
-                brush.setColor(QColor(226,226,226));
+                qcolor = QColor(226,226,226);
+            paintHex(hexagon, qcolor, painter);
 
-            painter.setBrush(brush);
-            painter.drawPolygon(QPolygon(hexagonPoints));
-
-            // drawing grid
-            painter.setPen(Qt::white);
-            painter.drawPolygon(QPolygon(hexagonPoints));
         }
+        paintHex(hintBtn,       QColor(245,245,0), painter);
+        paintHex(nextInfoBtn,   QColor(4,188,44),  painter);
+        paintHex(prevBtn,       QColor(5,73,188),  painter);
+        paintHex(clearBtn,      QColor(184,20,9),  painter);
     }
 
     QWidget::paintEvent(event);
     painter.end();
+}
+
+void HexCanvas::paintHex(const Hexagon& hexagon, const QColor& qcolor, QPainter& painter)
+{
+    QVector<QPoint> hexagonPoints;
+    hexagonPoints.push_back(hexagon.a);
+    hexagonPoints.push_back(hexagon.b);
+    hexagonPoints.push_back(hexagon.c);
+    hexagonPoints.push_back(hexagon.d);
+    hexagonPoints.push_back(hexagon.e);
+    hexagonPoints.push_back(hexagon.f);
+
+    // drawing hexagon
+    QBrush brush;
+    brush.setStyle(Qt::SolidPattern);
+    brush.setColor(qcolor);
+
+    painter.setBrush(brush);
+    painter.drawPolygon(QPolygon(hexagonPoints));
+    // drawing grid
+    painter.setPen(Qt::white);
+    painter.drawPolygon(QPolygon(hexagonPoints));
+
 }
 
 short int HexCanvas::getHexagonIndex(QPoint hit)
@@ -176,20 +196,7 @@ short int HexCanvas::getHexagonIndex(QPoint hit)
     for(unsigned short int i = 0; i < stateSpace->getSize() * stateSpace->getSize(); i++)
     {
         Hexagon hex = hexagons[i];
-        QVector2D v(
-                    hit.x() - hex.center.x(),
-                    hit.y() - hex.center.y()
-                    );
-        int v_snd = std::sqrt(v.x()*v.x()+v.y()*v.y());
-        QVector2D n(
-                    HEXAGONSIZE*v.x()/v_snd,
-                    HEXAGONSIZE*v.y()/v_snd
-                    );
-        int n_hex = std::max(
-                    abs(n.x()),
-                    abs((n.x() + std::sqrt(3)*std::abs(n.y()))/2)
-                    );
-        if(n_hex > v_snd)
+        if(isHex(hit, hex))
         {
             return i;
         }
@@ -197,7 +204,7 @@ short int HexCanvas::getHexagonIndex(QPoint hit)
     return -1;
 }
 
-bool HexCanvas::isHex(QPoint hit, Hexagon hex)
+bool HexCanvas::isHex(const QPoint& hit, const Hexagon& hex)
 {
     QVector2D v(
                 hit.x() - hex.center.x(),
@@ -220,13 +227,21 @@ bool HexCanvas::isHex(QPoint hit, Hexagon hex)
 
 void HexCanvas::mouseReleaseEvent(QMouseEvent *event)
 {
-    pointed = getHexagonIndex(QPoint(event->x(), event->y()));
+    QPoint hit = QPoint(event->x(), event->y());
+    pointed = getHexagonIndex(hit);
     if(pointed >= 0 && stateSpace->get(pointed) == stateSpace->EMPTY)
     {
         std::cout << ">>> Clicked hexagon is: " << pointed << "." << std::endl;
         stateSpace->set(pointed, player);
         getPlayerNextPlayer();
         update();
+    }
+    else
+    {
+        if(isHex(hit, nextInfoBtn))     nextInfo();
+        else if(isHex(hit, hintBtn))    hint();
+        else if(isHex(hit, prevBtn))    prev();
+        else if(isHex(hit, clearBtn))   clear();
     }
 
 }
@@ -244,3 +259,26 @@ void HexCanvas::setMouseTrackingEnabled()
 {
     setMouseTracking(true);
 }
+
+void HexCanvas::hint()
+{
+    std::cout << ">>> Clicked hexagon is: " << "hint" << "." << std::endl;
+}
+
+void HexCanvas::nextInfo()
+{
+    std::cout << ">>> Clicked hexagon is: " << "nextInfo" << "." << std::endl;
+}
+
+void HexCanvas::prev()
+{
+    std::cout << ">>> Clicked hexagon is: " << "prev" << "." << std::endl;
+}
+
+void HexCanvas::clear()
+{
+    stateSpace->clear();
+    player = hexStateSpace::BLUE;
+    update();
+}
+

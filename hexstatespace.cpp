@@ -111,6 +111,14 @@ void hexStateSpace::set(unsigned short int i, color value)
     space[lastField] = value;
 }
 
+void hexStateSpace::clear()
+{
+    for (unsigned short int i = 0; i < SIZE * SIZE; i++)
+    {
+        space[i] = EMPTY;
+    }
+}
+
 hexStateSpace::color hexStateSpace::winner() const
 {
     color* routeColoring = new color[SIZE * SIZE];

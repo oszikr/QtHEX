@@ -23,6 +23,7 @@ public:
     color get(unsigned short int i) const;
     void set(unsigned short i, unsigned short j, color value);
     void set(unsigned short i, color value);
+    void clear();
 
     color winner() const;
     color depthFirst(color* routeColoring, bool *edges, short int cursor) const;

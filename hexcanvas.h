@@ -39,7 +39,8 @@ public:
 
     void setStateSpace(hexStateSpace* stateSpace);
     short int getHexagonIndex(QPoint hit);
-    bool isHex(QPoint hit, Hexagon hex);
+    bool isHex(const QPoint &hit, const Hexagon &hex);
+    void paintHex(const Hexagon &hexagon, const QColor &qcolor, QPainter& painter);
     hexStateSpace::color getPlayerNextPlayer();
 
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
@@ -50,6 +51,10 @@ signals:
 
 public slots:
     void setMouseTrackingEnabled();
+    void hint();
+    void nextInfo();
+    void prev();
+    void clear();
 };
 
 #endif // HEXCANVAS_H
