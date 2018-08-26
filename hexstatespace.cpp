@@ -3,30 +3,20 @@
 // ctor
 hexStateSpace::hexStateSpace(): SIZE(11), lastField(-1)
 {
-    space = new color[SIZE * SIZE];
+    stateSpace = new color[SIZE * SIZE];
     for (unsigned short int i = 0; i < SIZE * SIZE; i++)
     {
-        space[i] = EMPTY;
-    }
-}
-
-hexStateSpace::hexStateSpace(const unsigned short int size): SIZE(size), lastField(-1)
-{
-    space = new color[SIZE * SIZE];
-    for (unsigned short int i = 0; i < SIZE * SIZE; i++)
-    {
-        space[i] = EMPTY;
+        stateSpace[i] = EMPTY;
     }
 }
 
 // copy ctor
-hexStateSpace::hexStateSpace(const hexStateSpace& other)
+hexStateSpace::hexStateSpace(const hexStateSpace& other): SIZE(11), lastField(-1)
 {
-    SIZE = other.SIZE;
-    space = new color[SIZE * SIZE];
+    stateSpace = new color[SIZE * SIZE];
     for (unsigned short int i = 0; i < SIZE * SIZE; i++)
     {
-        space[i] = other.space[i];
+        stateSpace[i] = other.stateSpace[i];
     }
 }
 
@@ -35,15 +25,9 @@ hexStateSpace& hexStateSpace::operator=(const hexStateSpace& other)
 {
     if(this != &other)
     {
-        if(SIZE != other.SIZE)
-        {
-            delete[] space;
-            SIZE = other.SIZE;
-            space = new color[SIZE * SIZE];
-        }
         for (unsigned short int i = 0; i < SIZE * SIZE; i++)
         {
-            space[i] = other.space[i];
+            stateSpace[i] = other.stateSpace[i];
         }
     }
     return *this;
@@ -52,7 +36,7 @@ hexStateSpace& hexStateSpace::operator=(const hexStateSpace& other)
 // dtor
 hexStateSpace::~hexStateSpace()
 {
-    delete[] space;
+    delete[] stateSpace;
 }
 
 std::ostream& operator<<(std::ostream& os, const hexStateSpace& obj)
@@ -91,76 +75,63 @@ unsigned short int hexStateSpace::getLength() const
 
 hexStateSpace::color* hexStateSpace::getSpace() const
 {
-    return space;
+    return stateSpace;
 }
 
 hexStateSpace::color hexStateSpace::get(unsigned short int i, unsigned short int j) const
 {
-    return space[SIZE * i + j];
+    return stateSpace[SIZE * i + j];
 }
 
 hexStateSpace::color hexStateSpace::get(unsigned short int i) const
 {
-    return space[i];
+    return stateSpace[i];
 }
 
 void hexStateSpace::set(unsigned short int i, unsigned short int j, color value)
 {
     lastField = (SIZE * i + j);
-    space[lastField] = value;
+    stateSpace[lastField] = value;
 }
 
 void hexStateSpace::set(unsigned short int i, color value)
 {
     lastField = i;
-    space[lastField] = value;
+    stateSpace[lastField] = value;
 }
 
 void hexStateSpace::clear()
 {
     for (unsigned short int i = 0; i < SIZE * SIZE; i++)
     {
-        space[i] = EMPTY;
+        stateSpace[i] = EMPTY;
     }
 }
 
 void hexStateSpace::undo()
 {
-    space[lastField] = EMPTY;
+    stateSpace[lastField] = EMPTY;
 }
 
+// Starts depth-first search in the table to recognize the winner state
 hexStateSpace::color hexStateSpace::winner() const
 {
+    // prepare coloring table
     color* routeColoring = new color[SIZE * SIZE];
     for (unsigned short int i = 0; i < SIZE * SIZE; i++)
     {
         routeColoring[i] = EMPTY;
     }
 
+    // prepare two flag to note that the left-right or top-down edge is reached
     bool* edges = new bool[2];
     for (unsigned short int i = 0; i < 2; i++)
     {
         edges[i] = false;
     }
 
+    // start the DFS recursion
     color winner = depthFirst(routeColoring, edges, lastField);
-
-    // debug
-    /*std::cout << ">>> CURRENT ROUTING: " << std::endl;
-    for (unsigned short int i = 0; i < SIZE; i++)
-    {
-        for (unsigned short int j = 0; j < SIZE; j++)
-        {
-            if(routeColoring[SIZE * i + j] == hexStateSpace::RED)
-                std::cout << " \e[0;31m" << routeColoring[SIZE * i + j] << "\e[m";
-            else if(routeColoring[SIZE * i + j] == hexStateSpace::BLUE)
-                std::cout << " \e[0;34m" << routeColoring[SIZE * i + j] << "\e[m";
-            else
-                std::cout << " \e[0;37m" << routeColoring[SIZE * i + j] << "\e[m";
-        }
-        std::cout << std::endl;
-    }*/
-    // /debug
 
     delete[] edges;
     delete[] routeColoring;
@@ -172,54 +143,60 @@ hexStateSpace::color hexStateSpace::depthFirst(color* routeColoring, bool* edges
 {
     if(!(cursor >= 0 && cursor < SIZE * SIZE))  return EMPTY; // out of range
     if(routeColoring[cursor] != EMPTY)          return EMPTY; // already visited
-    if(space[cursor] != space[lastField])       return EMPTY; // is not owned by the current player
+    if(stateSpace[cursor] != stateSpace[lastField])       return EMPTY; // is not owned by the current player
 
-    routeColoring[cursor] = space[lastField]; // coloring curent field
+    routeColoring[cursor] = stateSpace[lastField]; // coloring curent field
 
-    if(routeColoring[cursor] == BLUE)
+    if(routeColoring[cursor] == BLUE) // current field is blue
     {
         if(cursor >= 0 && cursor < SIZE) // first row
         {
-            edges[0] = true;
+            edges[0] = true; // reached top edge
         }
-        else if(cursor >= SIZE * (SIZE-1) && cursor < SIZE * SIZE)
+        else if(cursor >= SIZE * (SIZE-1) && cursor < SIZE * SIZE) // last row
         {
-            edges[1] = true; // last row
+            edges[1] = true; // reached down edge
         }
     }
     else // (routeColoring[lastField] == RED)
     {
         if(cursor % SIZE == 0) // first column
         {
-            edges[0] = true;
+            edges[0] = true; // reached left edge
         }
         else if(cursor % SIZE == 10) // last column
         {
-            edges[1] = true;
+            edges[1] = true; // reached right edge
         }
     }
     if(edges[0] == true && edges[1] == true)
     {
-        return space[lastField];
+        return stateSpace[lastField]; // reached two edges too!!
     }
 
-    if( cursor % 11 > 0 && depthFirst(routeColoring, edges, cursor - 1) == space[lastField])
-        return space[lastField];
+    // upper neighbour is always exists if is is in rage
+    if(depthFirst(routeColoring, edges, cursor - 11) == stateSpace[lastField])
+        return stateSpace[lastField];
 
-    if( cursor % 11 < 10 && depthFirst(routeColoring, edges, cursor + 1) == space[lastField])
-        return space[lastField];
+    // downer neighbour is always exists if is is in rage
+    if(depthFirst(routeColoring, edges, cursor + 11) == stateSpace[lastField])
+        return stateSpace[lastField];
 
-    if( cursor % 11 > 0 && depthFirst(routeColoring, edges, cursor - 12) == space[lastField])
-        return space[lastField];
+    // if left neighbour is exists
+    if( cursor % 11 > 0 && depthFirst(routeColoring, edges, cursor - 1) == stateSpace[lastField])
+        return stateSpace[lastField];
 
-    if(depthFirst(routeColoring, edges, cursor - 11) == space[lastField])
-        return space[lastField];
+    // if right neighbour is exists
+    if( cursor % 11 < 10 && depthFirst(routeColoring, edges, cursor + 1) == stateSpace[lastField])
+        return stateSpace[lastField];
 
-    if(depthFirst(routeColoring, edges, cursor + 11) == space[lastField])
-        return space[lastField];
+    // if upper neighbour is exists
+    if( cursor % 11 > 0 && depthFirst(routeColoring, edges, cursor - 12) == stateSpace[lastField])
+        return stateSpace[lastField];
 
-    if( cursor % 11 < 10 && depthFirst(routeColoring, edges, cursor + 12) == space[lastField])
-        return space[lastField];
+    // if downer neighbour is exists
+    if( cursor % 11 < 10 && depthFirst(routeColoring, edges, cursor + 12) == stateSpace[lastField])
+        return stateSpace[lastField];
 
     return EMPTY;
 }

@@ -82,15 +82,6 @@ void HexCanvas::setStateSpace(hexStateSpace* stateSpace)
     ltBorderPoints.back().setX( ltBorderPoints.back().x() + 1);
 
     // func buttons
-    /*QPoint tmp = hexagons[hexagons.size() - stateSpace->getSize()].center;
-    tmp.setX(tmp.x() + 6*HEXAGONSIZE);
-    nextInfoBtn = Hexagon(tmp, HEXAGONSIZE);
-    tmp.setX(tmp.x() + 3*HEXAGONSIZE);
-    prevBtn = Hexagon(tmp, HEXAGONSIZE);
-    tmp.setX(tmp.x() + 3*HEXAGONSIZE);
-    hintBtn = Hexagon(tmp, HEXAGONSIZE);
-    tmp.setX(tmp.x() + 3*HEXAGONSIZE);
-    clearBtn = Hexagon(tmp, HEXAGONSIZE);*/
     QPoint tmp(hexagons[0].center.x(), hexagons[stateSpace->getSize()-1].center.y());
     nextInfoBtn = Hexagon(tmp, HEXAGONSIZE);
     tmp.setX(tmp.x() + 3 * HEXAGONSIZE);
