@@ -14,13 +14,11 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    hextable.cpp \
     hexstatespace.cpp \
     test.cpp \
     hexcanvas.cpp
 
 HEADERS  += mainwindow.h \
-    hextable.h \
     hexstatespace.h \
     hexcanvas.h \
     hexagon.hpp
