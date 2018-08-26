@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    hexStateSpace stateSpace;
+    HexStateSpace stateSpace;
     //hexStateSpace::color winner;
 
     HexCanvas hc;

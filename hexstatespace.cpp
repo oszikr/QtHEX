@@ -1,7 +1,7 @@
 #include "hexstatespace.h"
 
 // ctor
-hexStateSpace::hexStateSpace(): SIZE(11), lastField(-1)
+HexStateSpace::HexStateSpace(): SIZE(11), lastField(-1)
 {
     stateSpace = new color[SIZE * SIZE];
     for (unsigned short int i = 0; i < SIZE * SIZE; i++)
@@ -11,7 +11,7 @@ hexStateSpace::hexStateSpace(): SIZE(11), lastField(-1)
 }
 
 // copy ctor
-hexStateSpace::hexStateSpace(const hexStateSpace& other): SIZE(11), lastField(-1)
+HexStateSpace::HexStateSpace(const HexStateSpace& other): SIZE(11), lastField(-1)
 {
     stateSpace = new color[SIZE * SIZE];
     for (unsigned short int i = 0; i < SIZE * SIZE; i++)
@@ -21,7 +21,7 @@ hexStateSpace::hexStateSpace(const hexStateSpace& other): SIZE(11), lastField(-1
 }
 
 // =operator
-hexStateSpace& hexStateSpace::operator=(const hexStateSpace& other)
+HexStateSpace& HexStateSpace::operator=(const HexStateSpace& other)
 {
     if(this != &other)
     {
@@ -34,21 +34,21 @@ hexStateSpace& hexStateSpace::operator=(const hexStateSpace& other)
 }
 
 // dtor
-hexStateSpace::~hexStateSpace()
+HexStateSpace::~HexStateSpace()
 {
     delete[] stateSpace;
 }
 
-std::ostream& operator<<(std::ostream& os, const hexStateSpace& obj)
+std::ostream& operator<<(std::ostream& os, const HexStateSpace& obj)
 {
     os << "Hex State Space at " << &obj << std::endl;
     for (unsigned short int i = 0; i < obj.SIZE; i++)
     {
         for (unsigned short int j = 0; j < obj.SIZE; j++)
         {
-            if(obj.get(i, j) == hexStateSpace::RED)
+            if(obj.get(i, j) == HexStateSpace::RED)
                 os << " \e[0;31m" << obj.get(i, j) << "\e[m";
-            else if(obj.get(i, j) == hexStateSpace::BLUE)
+            else if(obj.get(i, j) == HexStateSpace::BLUE)
                 os << " \e[0;34m" << obj.get(i, j) << "\e[m";
             else
                 os << " \e[0;37m" << obj.get(i, j) << "\e[m";
@@ -58,49 +58,49 @@ std::ostream& operator<<(std::ostream& os, const hexStateSpace& obj)
     return os;
 }
 
-short int hexStateSpace::getLast() const
+short int HexStateSpace::getLast() const
 {
     return lastField;
 }
 
-unsigned short int hexStateSpace::getSize() const
+unsigned short int HexStateSpace::getSize() const
 {
     return SIZE;
 }
 
-unsigned short int hexStateSpace::getLength() const
+unsigned short int HexStateSpace::getLength() const
 {
     return LENGTH;
 }
 
-hexStateSpace::color* hexStateSpace::getSpace() const
+HexStateSpace::color* HexStateSpace::getSpace() const
 {
     return stateSpace;
 }
 
-hexStateSpace::color hexStateSpace::get(unsigned short int i, unsigned short int j) const
+HexStateSpace::color HexStateSpace::get(unsigned short int i, unsigned short int j) const
 {
     return stateSpace[SIZE * i + j];
 }
 
-hexStateSpace::color hexStateSpace::get(unsigned short int i) const
+HexStateSpace::color HexStateSpace::get(unsigned short int i) const
 {
     return stateSpace[i];
 }
 
-void hexStateSpace::set(unsigned short int i, unsigned short int j, color value)
+void HexStateSpace::set(unsigned short int i, unsigned short int j, color value)
 {
     lastField = (SIZE * i + j);
     stateSpace[lastField] = value;
 }
 
-void hexStateSpace::set(unsigned short int i, color value)
+void HexStateSpace::set(unsigned short int i, color value)
 {
     lastField = i;
     stateSpace[lastField] = value;
 }
 
-void hexStateSpace::clear()
+void HexStateSpace::clear()
 {
     for (unsigned short int i = 0; i < SIZE * SIZE; i++)
     {
@@ -108,13 +108,13 @@ void hexStateSpace::clear()
     }
 }
 
-void hexStateSpace::undo()
+void HexStateSpace::undo()
 {
     stateSpace[lastField] = EMPTY;
 }
 
 // Starts depth-first search in the table to recognize the winner state
-hexStateSpace::color hexStateSpace::winner() const
+HexStateSpace::color HexStateSpace::isWinner() const
 {
     // prepare coloring table
     color* routeColoring = new color[SIZE * SIZE];
@@ -139,7 +139,7 @@ hexStateSpace::color hexStateSpace::winner() const
     return winner;
 }
 
-hexStateSpace::color hexStateSpace::depthFirst(color* routeColoring, bool* edges, short int cursor) const
+HexStateSpace::color HexStateSpace::depthFirst(color* routeColoring, bool* edges, short int cursor) const
 {
     if(!(cursor >= 0 && cursor < SIZE * SIZE))  return EMPTY; // out of range
     if(routeColoring[cursor] != EMPTY)          return EMPTY; // already visited

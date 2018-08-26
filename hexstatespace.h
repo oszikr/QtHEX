@@ -2,17 +2,17 @@
 #define HEXSTATESPACE_H
 #include <iostream>
 
-class hexStateSpace
+class HexStateSpace
 {
 public:
     enum color {EMPTY, BLUE, RED}; // this enum represents the colors on teh table
 
-    hexStateSpace();
-    hexStateSpace(const hexStateSpace& other);
-    hexStateSpace& operator=(const hexStateSpace& other);
-    ~hexStateSpace();
+    HexStateSpace();
+    HexStateSpace(const HexStateSpace& other);
+    HexStateSpace& operator=(const HexStateSpace& other);
+    ~HexStateSpace();
 
-    friend std::ostream& operator<<(std::ostream& os, const hexStateSpace& obj);
+    friend std::ostream& operator<<(std::ostream& os, const HexStateSpace& obj);
 
     unsigned short int getSize() const; // table height/width. It is 11.
     unsigned short int getLength() const; // count of fields. It is 11*11.
@@ -25,7 +25,7 @@ public:
     void set(unsigned short i, color value); // set field value by vector like indexing
     void clear(); // fill the statespacee with EMPTY
     void undo(); // set lastField to EMPTY
-    color winner() const; // if the last field change make a winning state then return the winner plyer's color
+    color isWinner() const; // if the last field change make a winning state then return the winner plyer's color
 
 private:
     unsigned short int SIZE; // table height/width

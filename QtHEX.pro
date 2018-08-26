@@ -16,11 +16,13 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     hexstatespace.cpp \
     test.cpp \
-    hexcanvas.cpp
+    hexcanvas.cpp \
+    hexstrategycontrol.cpp
 
 HEADERS  += mainwindow.h \
     hexstatespace.h \
     hexcanvas.h \
-    hexagon.hpp
+    hexagon.hpp \
+    hexstrategycontrol.h
 
 FORMS    += mainwindow.ui

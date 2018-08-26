@@ -22,13 +22,13 @@ public:
     short int pointed;
     QVector<Hexagon> hexagons;
     double HEXAGONWIDTH, HEXAGONHEIGHT;
-    hexStateSpace* stateSpace; // state spece
+    HexStateSpace* stateSpace; // state spece
     QVector<QPoint> upBorderPoints;
     QVector<QPoint> dnBorderPoints;
     QVector<QPoint> ltBorderPoints;
     QVector<QPoint> rtBorderPoints;
     QTimer* setMouseTrackingEnabledTimer;
-    hexStateSpace::color player;
+    HexStateSpace::color player;
     Hexagon hintBtn;
     Hexagon nextInfoBtn;
     Hexagon prevBtn;
@@ -37,11 +37,11 @@ public:
     explicit HexCanvas(QWidget *parent = 0);
     ~HexCanvas() Q_DECL_OVERRIDE;
 
-    void setStateSpace(hexStateSpace* stateSpace);
+    void setStateSpace(HexStateSpace* stateSpace);
     short int getHexagonIndex(QPoint hit);
     bool isHex(const QPoint &hit, const Hexagon &hex);
     void paintHex(const Hexagon &hexagon, const QColor &qcolor, QPainter& painter);
-    hexStateSpace::color getPlayerNextPlayer();
+    HexStateSpace::color getPlayerNextPlayer();
 
     void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
     void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;

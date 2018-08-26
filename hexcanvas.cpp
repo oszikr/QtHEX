@@ -1,13 +1,13 @@
 #include "hexcanvas.h"
 
 HexCanvas::HexCanvas(QWidget *parent) : QWidget(parent), HEXAGONSIZE(27), PADDING(20), pointed(-1),
-    HEXAGONWIDTH(2 * HEXAGONSIZE), HEXAGONHEIGHT(std::sqrt(3) * HEXAGONSIZE), player(hexStateSpace::BLUE)
+    HEXAGONWIDTH(2 * HEXAGONSIZE), HEXAGONHEIGHT(std::sqrt(3) * HEXAGONSIZE), player(HexStateSpace::BLUE)
 {
     setMouseTrackingEnabledTimer = new QTimer(this);
     connect(setMouseTrackingEnabledTimer, SIGNAL(timeout()), this, SLOT(setMouseTrackingEnabled()));
 }
 
-void HexCanvas::setStateSpace(hexStateSpace* stateSpace)
+void HexCanvas::setStateSpace(HexStateSpace* stateSpace)
 {
     this->stateSpace = stateSpace;
     this->hexagons.clear();
@@ -97,13 +97,13 @@ void HexCanvas::setStateSpace(hexStateSpace* stateSpace)
 HexCanvas::~HexCanvas()
 {}
 
-hexStateSpace::color HexCanvas::getPlayerNextPlayer()
+HexStateSpace::color HexCanvas::getPlayerNextPlayer()
 {
-    hexStateSpace::color prevPlayer = player;
-    if(player == hexStateSpace::BLUE)
-        player = hexStateSpace::RED;
+    HexStateSpace::color prevPlayer = player;
+    if(player == HexStateSpace::BLUE)
+        player = HexStateSpace::RED;
     else
-        player = hexStateSpace::BLUE;
+        player = HexStateSpace::BLUE;
     return prevPlayer;
 }
 
@@ -130,21 +130,21 @@ void HexCanvas::paintEvent(QPaintEvent *event)
     {
         for(unsigned short int j = 0; j < stateSpace->getSize(); j++)
         {
-            hexStateSpace::color color = stateSpace->getSpace()[stateSpace->getSize() * i + j];
+            HexStateSpace::color color = stateSpace->getSpace()[stateSpace->getSize() * i + j];
             Hexagon hexagon = hexagons[stateSpace->getSize() * i + j];
             QColor qcolor;
-            if(color == hexStateSpace::BLUE)
+            if(color == HexStateSpace::BLUE)
                 qcolor = QColor(5,73,188);
-            else if(color == hexStateSpace::RED)
+            else if(color == HexStateSpace::RED)
                 qcolor = QColor(184,20,9);
             else if(stateSpace->getSize() * i + j == pointed)
             {
-                if(player == hexStateSpace::BLUE)
+                if(player == HexStateSpace::BLUE)
                     qcolor = QColor(5,73,188);
                 else
                     qcolor = QColor(184,20,9);
             }
-            else if(color == hexStateSpace::EMPTY)
+            else if(color == HexStateSpace::EMPTY)
                 qcolor = QColor(226,226,226);
             paintHex(hexagon, qcolor, painter);
 
@@ -258,14 +258,14 @@ void HexCanvas::hint()
 
 void HexCanvas::nextInfo()
 {
-    std::cout << "The next player is the " << (player == hexStateSpace::BLUE ? "\e[0;34mBlue" : "\e[0;31mRed") << "\e[m." << std::endl;
+    std::cout << "The next player is the " << (player == HexStateSpace::BLUE ? "\e[0;34mBlue" : "\e[0;31mRed") << "\e[m." << std::endl;
 }
 
 void HexCanvas::prev()
 {
     if(stateSpace->getLast() == -1) return;
-    if(stateSpace->get(stateSpace->getLast()) == hexStateSpace::EMPTY) return;
-    stateSpace->set(stateSpace->getLast(), hexStateSpace::EMPTY);
+    if(stateSpace->get(stateSpace->getLast()) == HexStateSpace::EMPTY) return;
+    stateSpace->set(stateSpace->getLast(), HexStateSpace::EMPTY);
     getPlayerNextPlayer();
     update();
 }
@@ -273,7 +273,7 @@ void HexCanvas::prev()
 void HexCanvas::clear()
 {
     stateSpace->clear();
-    player = hexStateSpace::BLUE;
+    player = HexStateSpace::BLUE;
     update();
 }
 

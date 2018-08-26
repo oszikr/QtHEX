@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "hextable.h"
 
 namespace Ui {
 class MainWindow;
@@ -17,7 +16,7 @@ public:
     ~MainWindow();
 
 private:
-    HexTable* hexTable;
+
 };
 
 #endif // MAINWINDOW_H
