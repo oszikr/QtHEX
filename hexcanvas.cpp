@@ -12,6 +12,8 @@ void HexCanvas::setStateSpace(HexStateSpace* stateSpace)
     this->stateSpace = stateSpace;
     this->hexagons.clear();
 
+    if(stateSpace->getSize() < 9) PADDING += (9-stateSpace->getSize())*HEXAGONSIZE;
+
     setFixedSize(QSize(
                 (HEXAGONWIDTH/4*3) * stateSpace->getSize() + (HEXAGONWIDTH/4*1) + 2*PADDING,
                 (HEXAGONHEIGHT*stateSpace->getSize()) + (HEXAGONHEIGHT/2*(stateSpace->getSize()-1)) + 2*PADDING));
@@ -83,6 +85,8 @@ void HexCanvas::setStateSpace(HexStateSpace* stateSpace)
 
     // func buttons
     QPoint tmp(hexagons[0].center.x(), hexagons[stateSpace->getSize()-1].center.y());
+    if(stateSpace->getSize() < 9) tmp.setY(tmp.y() - (9-stateSpace->getSize())*HEXAGONSIZE);
+
     nextInfoBtn = Hexagon(tmp, HEXAGONSIZE);
     tmp.setX(tmp.x() + 3 * HEXAGONSIZE);
     hintBtn = Hexagon(tmp, HEXAGONSIZE);
@@ -253,7 +257,9 @@ void HexCanvas::setMouseTrackingEnabled()
 
 void HexCanvas::hint()
 {
-    std::cout << "Hit is not implemented yet." << std::endl;
+    HexStrategyControl ctrl(*stateSpace, player, (player == HexStateSpace::BLUE ? HexStateSpace::RED : HexStateSpace::BLUE) );
+    short int hint = ctrl.getWinningStep();
+    std::cout << "The winning field's index is: " << hint << std::endl;
 }
 
 void HexCanvas::nextInfo()

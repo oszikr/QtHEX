@@ -1,92 +1,84 @@
 #include "hexstrategycontrol.h"
 
-HexStrategyControl::HexStrategyControl()
-{
-
-}
+HexStrategyControl::HexStrategyControl(HexStateSpace hex, HexStateSpace::color A, HexStateSpace::color B)
+    :hex(hex), A(A), B(B)
+{}
 
 short int HexStrategyControl::getWinningStep() const
 {
-    //std::cout << ">>> Searching winning strategy: ";
-    // level 0
-    for (unsigned short int i = 0; i < hex.getLength(); i++) {
-            if (hex.get(i) == HexStateSpace::EMPTY) {
-                HexStateSpace nextHex(hex);
-                //nextHex.set(BLUE/RED);
-                //short int result = recursiveAnalisys(nextHex, 1);
-                //if (result == 1) {
-                    // if I find a winning strategy, return it
-                    //return i;
-                //}
+    std::cout << ">>> Searching winning strategy for all empty field." << std::endl;
+    // level := 0 -- A player's level
+    for (unsigned short int i = 0; i < hex.getLength(); i++)
+    {
+        if (hex.get(i) == HexStateSpace::EMPTY) {
+            std::cout << ">>> Searching winning strategy for field " << i << ": " << std::endl;
+            HexStateSpace nextHex(hex);
+            nextHex.set(i, A);
+            HexStateSpace::color winner = alphaBetaRecursion(nextHex, 1);
+            if (winner == A)
+            {
+                std::cout << "Found!" << std::endl;
+                return i;
             }
-            std::cout << "|";
+        }
+        std::cout << "Not found." << std::endl;
     }
-    std::cout << std::endl;
+    //std::cout << std::endl;
     return -1;
 }
 
-/*
-public int analisys(Chomp curChomp, int level) {
-    // System.out.println("> " + getNSpaces(level) + info);
 
-    // The tixic fiels is the last
-    if (curChomp.getActiveFields() == 1) {
-        if (level % 2 == 0) {// A player's level
-            return B;
-        } else {// B player's level
-            return A;
-        }
-    }
+HexStateSpace::color HexStrategyControl::alphaBetaRecursion(HexStateSpace& curHex, const unsigned int level) const
+{
+    std::cout << "Level: " << level << std::endl;
 
-    // no more fields
-    if (curChomp.getActiveFields() == 0) {
-        if (level % 2 == 0) {// A player's level
-            return A;
-        } else {// B player's level
-            return B;
-        }
-    }
-
-    // find special states
-    int heur = getAdvancedStates(curChomp);
-    if (heur > 0) {
-        if (level % 2 == 0) {// A player's level
-            return A;
-        } else {// B player's level
-            return B;
-        }
-    }
+    // In the winner state
+    HexStateSpace::color winner = curHex.isWinner();
+    if (winner == A) return A;
+    if (winner == B) return B;
 
     // recursion
-    if (level % 2 == 0) {// A player's level
-        for (int i = 0; i < curChomp.getWidth(); i++) {
-            for (int j = 0; j < curChomp.getHeight(); j++) {
-                if (curChomp.getStateMap()[i][j]) {
-                    Chomp nextChomp = new Chomp(curChomp);
-                    nextChomp.action(i, j);
-                    int res = analisys(nextChomp, level + 1);
-                    if (res == A) {
-                        return A;
-                    }
+    if (level % 2 != 0) { // B player's level
+        unsigned short int count = 0;
+        for (unsigned short int i = 0; i < hex.getLength(); i++)
+        {
+            if (hex.get(i) == HexStateSpace::EMPTY) {
+                count++;
+                HexStateSpace nextHex(hex);
+                nextHex.set(i, B);
+                std::cout << "Field: " << i << std::endl;
+                HexStateSpace::color winner = alphaBetaRecursion(nextHex, level + 1);
+                if (winner == B)
+                {
+                    // if there is at least one field which B can win => return B
+                    return B;
                 }
             }
         }
-        return B;
-    } else {// B player's level
-        for (int i = 0; i < curChomp.getWidth(); i++) {
-            for (int j = 0; j < curChomp.getHeight(); j++) {
-                if (curChomp.getStateMap()[i][j]) {
-                    Chomp nextChomp = new Chomp(curChomp);
-                    nextChomp.action(i, j);
-                    int res = analisys(nextChomp, level + 1);
-                    if (res == B) {
-                        return B;
-                    }
-                }
-            }
-        }
+        if(count == 0) return HexStateSpace::EMPTY; // no more field to play
         return A;
     }
-}
+    else // A player's level
+    {
+        unsigned short int count = 0;
+        for (unsigned short int i = 0; i < hex.getLength(); i++)
+        {
+            if (hex.get(i) == HexStateSpace::EMPTY) {
+                count++;
+                HexStateSpace nextHex(hex);
+                nextHex.set(i, A);
+                std::cout << "Field: " << i << std::endl;
+                HexStateSpace::color winner = alphaBetaRecursion(nextHex, level + 1);
+                if (winner == A)
+                {
+                    // if there is at least one field which A can win => return A
+                    return A;
+                }
+            }
+        }
+        if(count == 0) return HexStateSpace::EMPTY; // no more field to play
+        return B;
+    }
 
-*/
+    //return HexStateSpace::EMPTY;
+}

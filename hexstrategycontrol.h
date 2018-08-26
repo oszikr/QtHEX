@@ -5,10 +5,14 @@
 class HexStrategyControl
 {
 public:
-    HexStrategyControl();
+    HexStrategyControl(HexStateSpace hex, HexStateSpace::color A, HexStateSpace::color B);
     short int getWinningStep() const;
+    HexStateSpace::color alphaBetaRecursion(HexStateSpace &curHex, const unsigned int level) const;
 
-    HexStateSpace hex;
+private:
+    const HexStateSpace hex;
+    const HexStateSpace::color A; // the player who search the winning strategy
+    const HexStateSpace::color B; // the other player
 };
 
 #endif // HEXSTRATEGYCONTROL_H
