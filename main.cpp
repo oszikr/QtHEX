@@ -13,8 +13,6 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     HexStateSpace stateSpace;
-    //hexStateSpace::color winner;
-
     HexCanvas hc;
     hc.setStateSpace(&stateSpace);
     hc.show();

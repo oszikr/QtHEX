@@ -259,7 +259,16 @@ void HexCanvas::hint()
 {
     HexStrategyControl ctrl(*stateSpace, player, (player == HexStateSpace::BLUE ? HexStateSpace::RED : HexStateSpace::BLUE) );
     short int hint = ctrl.getWinningStep();
-    std::cout << "The winning field's index is: " << hint << std::endl;
+    if(hint >= 0)
+    {
+        std::cout << "The winning field's array index is: " << hint << std::endl;
+        std::cout << "The winning field's matrix index is: [" <<
+                     hint/stateSpace->getSize()+1 << ". row, " << hint%stateSpace->getSize()+1 << ". col]" << std::endl;
+    }
+    else
+    {
+        std::cout << "You can not win: " << hint << std::endl;
+    }
 }
 
 void HexCanvas::nextInfo()
