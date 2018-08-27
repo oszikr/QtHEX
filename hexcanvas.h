@@ -56,6 +56,9 @@ public slots:
     void nextInfo();
     void prev();
     void clear();
+
+private:
+    double getWallTime() const;
 };
 
 #endif // HEXCANVAS_H

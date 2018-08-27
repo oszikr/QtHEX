@@ -226,9 +226,13 @@ void HexCanvas::mouseReleaseEvent(QMouseEvent *event)
     pointed = getHexagonIndex(hit);
     if(pointed >= 0 && stateSpace->get(pointed) == stateSpace->EMPTY)
     {
+        if(stateSpace->isWinner()) return;
         std::cout << ">>> Clicked hexagon is: " << pointed << "." << std::endl;
         stateSpace->set(pointed, player);
-        getPlayerNextPlayer();
+        if(!stateSpace->isWinner())
+            getPlayerNextPlayer();
+        else
+            std::cout << "The " << (player == HexStateSpace::BLUE ? "\e[0;34mBlue" : "\e[0;31mRed") << "\e[m player won." << std::endl;
         update();
     }
     else
@@ -238,7 +242,6 @@ void HexCanvas::mouseReleaseEvent(QMouseEvent *event)
         else if(isHex(hit, prevBtn))    prev();
         else if(isHex(hit, clearBtn))   clear();
     }
-
 }
 
 void HexCanvas::mouseMoveEvent(QMouseEvent *event)
@@ -256,9 +259,14 @@ void HexCanvas::setMouseTrackingEnabled()
 }
 
 void HexCanvas::hint()
-{
+{  
     HexStrategyControl ctrl(*stateSpace, player, (player == HexStateSpace::BLUE ? HexStateSpace::RED : HexStateSpace::BLUE) );
+
+    double startTime = getWallTime();
     short int hint = ctrl.getWinningStep();
+    double meansurement = getWallTime() - startTime;
+    std::cout << "Elapse time: " << meansurement << std::endl;
+
     if(hint >= 0)
     {
         std::cout << "The winning field's array index is: " << hint << std::endl;
@@ -292,3 +300,31 @@ void HexCanvas::clear()
     update();
 }
 
+//Get elapsed time for windows/linux
+#ifdef _WIN32
+#include <windows.h>
+double HexCanvas::getWallTime() const
+{
+    LARGE_INTEGER time,freq;
+    if (!QueryPerformanceFrequency(&freq))
+    {
+        return 0; //Handle error
+    }
+    if (!QueryPerformanceCounter(&time))
+    {
+        return 0; //Handle error
+    }
+    return (double)time.QuadPart / freq.QuadPart;
+}
+#else
+#include <sys/time.h>
+double HexCanvas::getWallTime() const
+{
+    struct timeval time;
+    if (gettimeofday(&time, 0))
+    {
+        return 0; //Handle error
+    }
+    return (double)time.tv_sec + (double)time.tv_usec * .000001;
+}
+#endif
