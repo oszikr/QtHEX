@@ -138,7 +138,7 @@ HexStateSpace::color HexStateSpace::isWinner() const
     color winner = depthFirst(routeColoring, edges, lastField);
 
     // debug
-    std::cout << ">>> CURRENT ROUTING: " << std::endl;
+    /*std::cout << ">>> CURRENT ROUTING: " << std::endl;
     for (unsigned short int i = 0; i < SIZE; i++)
     {
         for (unsigned short int j = 0; j < SIZE; j++)
@@ -151,7 +151,7 @@ HexStateSpace::color HexStateSpace::isWinner() const
                 std::cout << " \e[0;37m" << routeColoring[SIZE * i + j] << "\e[m";
         }
         std::cout << std::endl;
-    }
+    }*/
     // /debug
 
     delete[] edges;
@@ -160,7 +160,7 @@ HexStateSpace::color HexStateSpace::isWinner() const
     return winner;
 }
 
-HexStateSpace::color HexStateSpace::depthFirst(color* routeColoring, bool* edges, short int cursor) const
+HexStateSpace::color HexStateSpace::depthFirst(color* routeColoring, bool* edges, const short int cursor) const
 {
     if(!(cursor >= 0 && cursor < SIZE * SIZE))  return EMPTY; // out of range
     if(routeColoring[cursor] != EMPTY)          return EMPTY; // already visited
@@ -195,11 +195,11 @@ HexStateSpace::color HexStateSpace::depthFirst(color* routeColoring, bool* edges
         return stateSpace[lastField]; // reached two edges too!!
     }
 
-    // upper neighbour is always exists if is is in rage
+    // up neighbour is always exists if is is in rage
     if(depthFirst(routeColoring, edges, cursor - _HEXTABLESIZE_) == stateSpace[lastField])
         return stateSpace[lastField];
 
-    // downer neighbour is always exists if is is in rage
+    // down neighbour is always exists if is is in rage
     if(depthFirst(routeColoring, edges, cursor + _HEXTABLESIZE_) == stateSpace[lastField])
         return stateSpace[lastField];
 
@@ -212,7 +212,7 @@ HexStateSpace::color HexStateSpace::depthFirst(color* routeColoring, bool* edges
         return stateSpace[lastField];
 
     // if upper neighbour is exists
-    if( cursor % _HEXTABLESIZE_ > 0 && depthFirst(routeColoring, edges, cursor - _HEXTABLESIZE_ + 1) == stateSpace[lastField])
+    if( cursor % _HEXTABLESIZE_ > 0 && depthFirst(routeColoring, edges, cursor - _HEXTABLESIZE_ - 1) == stateSpace[lastField])
         return stateSpace[lastField];
 
     // if downer neighbour is exists
