@@ -121,6 +121,12 @@ void HexCanvas::paintEvent(QPaintEvent *event)
     painter.fillRect(event->rect(), Qt::white);
 
     // paint borders
+    /*paintTriangle(
+                QPoint(hexagons[0].center.x() - HEXAGONSIZE - 5, hexagons[0].center.y() - HEXAGONSIZE - 5),
+                QPoint(hexagons[stateSpace->getSize()-1].center.x() + HEXAGONSIZE + 5, hexagons[stateSpace->getSize()-1].center.y() - HEXAGONSIZE - 5),
+                QPoint(hexagons[stateSpace->getLength()-1].center.x() + HEXAGONSIZE + 5, hexagons[stateSpace->getLength()-1].center.y() + HEXAGONSIZE + 5),
+                QColor(184,20,9),
+                painter);*/
     painter.setPen(QColor(5,73,188));
     painter.drawPolyline(upBorderPoints);
     painter.drawPolyline(dnBorderPoints);
@@ -161,6 +167,21 @@ void HexCanvas::paintEvent(QPaintEvent *event)
 
     QWidget::paintEvent(event);
     painter.end();
+}
+
+void HexCanvas::paintTriangle(const QPoint& a, const QPoint& b, const QPoint& c, const QColor& qcolor, QPainter& painter)
+{
+     QVector<QPoint> points;
+     points.push_back(a);
+     points.push_back(b);
+     points.push_back(c);
+
+     QBrush brush;
+     brush.setStyle(Qt::SolidPattern);
+     brush.setColor(qcolor);
+
+     painter.setBrush(brush);
+     painter.drawPolygon(QPolygon(points));
 }
 
 void HexCanvas::paintHex(const Hexagon& hexagon, const QColor& qcolor, QPainter& painter)

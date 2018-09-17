@@ -41,6 +41,7 @@ public:
     void setStateSpace(HexStateSpace* stateSpace);
     short int getHexagonIndex(QPoint hit);
     bool isHex(const QPoint &hit, const Hexagon &hex);
+    void paintTriangle(const QPoint &a, const QPoint &b, const QPoint &c, const QColor& qcolor, QPainter& painter);
     void paintHex(const Hexagon &hexagon, const QColor &qcolor, QPainter& painter);
     HexStateSpace::color getPlayerNextPlayer();
 
