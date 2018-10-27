@@ -160,6 +160,11 @@ HexStateSpace::color HexStateSpace::isWinner() const
     return winner;
 }
 
+/*long HexStateSpace::getHashCode() const
+{
+    return null;
+}*/
+
 HexStateSpace::color HexStateSpace::depthFirst(color* routeColoring, bool* edges, const short int cursor) const
 {
     if(!(cursor >= 0 && cursor < SIZE * SIZE))  return EMPTY; // out of range

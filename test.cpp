@@ -2,8 +2,27 @@
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
 #include <cstdlib>
+#include <climits>
+#include <cmath>
 
 #include "hexstatespace.h"
+
+/*int main(int, char**)
+{
+    unsigned long long l = 0; //ULLONG_MAX;
+    for(int i = 0; i < (11*11); ++i)
+    {
+        unsigned long long prev = l;
+        l += 2 * std::pow(3, i);
+        std::cout << i << "\t" << l << std::endl;
+        if(prev > l)
+        {
+            std::cout << "max\t" << ULLONG_MAX << std::endl;
+            return -1;
+        }
+    }
+    return 0;
+}
 
 /*int main(int, char**)
 {

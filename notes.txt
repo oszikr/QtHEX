@@ -1,0 +1,26 @@
+A hex tábla 11x11-es.
+A hex tábla 121 mezőből áll.
+3^121 lehetséges állapot a játékban: 
+	5.3910308997432936312395394885288e+57
+	5391030899743293631239539488528815119194426882613553319203
+	5,391,030,899,743,293,631,239,539,488,528,815,119,194,426,882,613,553,319,203
+	58 számjegyű.
+A játék állapotát egy hármas számrendszerbeli szám reprezentálja, pl 12012012012012012102012012012012.........
+
+-----------------------------------------------------
+
+Állítás: A legnagyobb 121 számjegyű hármas számrendszerbeli szám 10-es számrednszerbe átváltva 3^121.
+
+Következmény: mivel a legnagyobb 3-as számredszerbeli szám az utolsó lehetésges állapotot reprezentálja, elmondhatjuk, hogy ez az összes lehetséges állapot közül az utolsó, tehát megegyezik a lehetséges állapotok számával, ami 3^121.
+
+-----------------------------------------------------
+
+Hány biten lehet a 3^121-et ábrázolni?
+
+log2(3^121) = 191.78046... < 192 bit
+192 / 8 = 24 byte
+
+/ unsigned long long int in cpp is 64 bit = 8 byte /
+
+-----------------------------------------------------
+
