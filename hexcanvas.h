@@ -18,48 +18,51 @@ class HexCanvas : public QWidget
     Q_OBJECT
 public:
 
-    unsigned short int HEXAGONSIZE; // hexagon's radius
-    unsigned short int PADDING;
-    short int pointed;
-    QVector<Hexagon> hexagons;
-    double HEXAGONWIDTH, HEXAGONHEIGHT;
+    unsigned short int HEXAGONSIZE; // 27: hexagon's radius
+    unsigned short int PADDING; // 20: padding from widget's edges
+    short int pointed; // last pointed hexangon's index
+    QVector<Hexagon> hexagons; // hexagons to draw
+    double HEXAGONWIDTH, HEXAGONHEIGHT; // hexagons' dimensions
     HexStateSpace* stateSpace; // state spece
+
+    // points to draw red and blue zig zag edges
     QVector<QPoint> upBorderPoints;
     QVector<QPoint> dnBorderPoints;
     QVector<QPoint> ltBorderPoints;
     QVector<QPoint> rtBorderPoints;
-    QTimer* setMouseTrackingEnabledTimer;
-    HexStateSpace::color player;
-    Hexagon hintBtn;
-    Hexagon nextInfoBtn;
-    Hexagon prevBtn;
-    Hexagon clearBtn;
+
+    QTimer* setMouseTrackingEnabledTimer; // timer to get cusor coordinates and highlight pointed hexagon
+    HexStateSpace::color player; // next player
+    Hexagon nextInfoBtn; // green button: cout next player's color (green)
+    Hexagon hintBtn; // build alfa/beta game three (yellow)
+    Hexagon prevBtn; // roll back last move (blue)
+    Hexagon clearBtn; // clear table (red)
 
     explicit HexCanvas(QWidget *parent = 0);
     ~HexCanvas() Q_DECL_OVERRIDE;
 
-    void setStateSpace(HexStateSpace* stateSpace);
-    short int getHexagonIndex(QPoint hit);
-    bool isHex(const QPoint &hit, const Hexagon &hex);
-    void paintTriangle(const QPoint &a, const QPoint &b, const QPoint &c, const QColor& qcolor, QPainter& painter);
-    void paintHex(const Hexagon &hexagon, const QColor &qcolor, QPainter& painter);
-    HexStateSpace::color getPlayerNextPlayer();
+    void setStateSpace(HexStateSpace* stateSpace); // simple setter rof game state
+    short int getHexagonIndex(QPoint hit); // get hexagon index by cursor coordinates
+    bool isHex(const QPoint &hit, const Hexagon &hex); // return true if the cursor in the hexagon
+    void paintTriangle(const QPoint &a, const QPoint &b, const QPoint &c, const QColor& qcolor, QPainter& painter); // print board and buttons to the canvas
+    void paintHex(const Hexagon &hexagon, const QColor &qcolor, QPainter& painter); // paints a single hexagon
+    HexStateSpace::color getPlayerNextPlayer(); // set swap and return with player variable
 
-    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE;
-    void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
-    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE; // pain the board and the buttons
+    void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE; // when user clicked recognizes the clicked hexagon
+    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE; // highlight pointed hexagon
 
 signals:
 
 public slots:
-    void setMouseTrackingEnabled();
-    void hint();
-    void nextInfo();
-    void prev();
-    void clear();
+    void setMouseTrackingEnabled(); // qt tracking mouse coords
+    void nextInfo(); // green button: cout next player's color (green)
+    void hint(); // build alfa/beta game three (yellow)
+    void prev(); // roll back last move (blue)
+    void clear(); // clear table (red)
 
 private:
-    double getWallTime() const;
+    double getWallTime() const; // for measure the elapsed time
 };
 
 #endif // HEXCANVAS_H

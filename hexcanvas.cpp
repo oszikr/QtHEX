@@ -232,7 +232,7 @@ bool HexCanvas::isHex(const QPoint& hit, const Hexagon& hex)
                 HEXAGONSIZE*v.y()/v_snd
                 );
     int n_hex = std::max(
-                abs(n.x()),
+                abs((double)n.x()),
                 abs((n.x() + std::sqrt(3)*std::abs(n.y()))/2)
                 );
     if(n_hex > v_snd)

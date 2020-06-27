@@ -34,6 +34,8 @@ private:
     color* stateSpace; // state spece
     short int lastField; // last clicked field vector like index
 
+    // Depth-first search in the hex board. The search shearch edges connections with the current color.
+    // Used by isWinner(). coloring and edges arrays have to init.
     color depthFirst(color* routeColoring, bool *edges, short int cursor) const;
 };
 

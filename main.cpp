@@ -12,9 +12,9 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    HexStateSpace stateSpace;
-    HexCanvas hc;
-    hc.setStateSpace(&stateSpace);
+    HexStateSpace stateSpace; // Create hex game statespace.
+    HexCanvas hc; // create canvas. board and buttons.
+    hc.setStateSpace(&stateSpace); // bind statespace to canvas.
     hc.show();
 
     return a.exec();
