@@ -13,6 +13,7 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
+    hexnnetcontrol.cpp \
         mainwindow.cpp \
     hexstatespace.cpp \
     test.cpp \
@@ -20,6 +21,7 @@ SOURCES += main.cpp\
     hexstrategycontrol.cpp
 
 HEADERS  += mainwindow.h \
+    hexnnetcontrol.h \
     hexstatespace.h \
     hexcanvas.h \
     hexagon.hpp \

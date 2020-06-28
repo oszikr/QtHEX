@@ -10,6 +10,7 @@
 #include "hexstatespace.h"
 #include "hexagon.hpp"
 #include "hexstrategycontrol.h"
+#include "hexnnetcontrol.h"
 
 # define M_PI           3.14159265358979323846
 
@@ -35,6 +36,7 @@ public:
     HexStateSpace::color player; // next player
     Hexagon nextInfoBtn; // green button: cout next player's color (green)
     Hexagon hintBtn; // build alfa/beta game three (yellow)
+    Hexagon hintBtnTF; // predicting with nnet (orange)
     Hexagon prevBtn; // roll back last move (blue)
     Hexagon clearBtn; // clear table (red)
 
@@ -58,6 +60,7 @@ public slots:
     void setMouseTrackingEnabled(); // qt tracking mouse coords
     void nextInfo(); // green button: cout next player's color (green)
     void hint(); // build alfa/beta game three (yellow)
+    void hintTF(); // predicting with nnet (orange)
     void prev(); // roll back last move (blue)
     void clear(); // clear table (red)
 

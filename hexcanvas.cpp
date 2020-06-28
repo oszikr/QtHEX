@@ -88,11 +88,13 @@ void HexCanvas::setStateSpace(HexStateSpace* stateSpace)
     if(stateSpace->getSize() < 9) tmp.setY(tmp.y() - (9-stateSpace->getSize())*HEXAGONSIZE);
 
     nextInfoBtn = Hexagon(tmp, HEXAGONSIZE);
-    tmp.setX(tmp.x() + 3 * HEXAGONSIZE);
+    tmp.setX(tmp.x() + 2 * HEXAGONSIZE);
     hintBtn = Hexagon(tmp, HEXAGONSIZE);
-    tmp.setX(tmp.x() + 3 * HEXAGONSIZE);
+    tmp.setX(tmp.x() + 2 * HEXAGONSIZE);
+    hintBtnTF = Hexagon(tmp, HEXAGONSIZE);
+    tmp.setX(tmp.x() + 2 * HEXAGONSIZE);
     prevBtn = Hexagon(tmp, HEXAGONSIZE);
-    tmp.setX(tmp.x() + 3 * HEXAGONSIZE);
+    tmp.setX(tmp.x() + 2 * HEXAGONSIZE);
     clearBtn = Hexagon(tmp, HEXAGONSIZE);
 
     setMouseTrackingEnabled();
@@ -160,6 +162,7 @@ void HexCanvas::paintEvent(QPaintEvent *event)
 
         }
         paintHex(hintBtn,       QColor(245,245,0), painter);
+        paintHex(hintBtnTF,     QColor(255,165,0),  painter);
         paintHex(nextInfoBtn,   QColor(4,188,44),  painter);
         paintHex(prevBtn,       QColor(5,73,188),  painter);
         paintHex(clearBtn,      QColor(184,20,9),  painter);
@@ -260,6 +263,7 @@ void HexCanvas::mouseReleaseEvent(QMouseEvent *event)
     {
         if(isHex(hit, nextInfoBtn))     nextInfo();
         else if(isHex(hit, hintBtn))    hint();
+        else if(isHex(hit, hintBtnTF))  hintTF();
         else if(isHex(hit, prevBtn))    prev();
         else if(isHex(hit, clearBtn))   clear();
     }
@@ -298,6 +302,13 @@ void HexCanvas::hint()
     {
         std::cout << "You can not win: " << hint << std::endl;
     }
+}
+
+void HexCanvas::hintTF()
+{
+    std::cout << "Using NNET" << std::endl;
+    HexNnetControl nnetctrl(this);
+    nnetctrl.Start();
 }
 
 void HexCanvas::nextInfo()
