@@ -4,11 +4,19 @@ HexNnetControl::HexNnetControl(QObject *parent)
 {
     python = "C:\\Users\\Oszi Krisztian\\AppData\\Local\\Programs\\Python\\Python36\\python.exe";
     workingDir = "C:/Users/Oszi Krisztian/Documents/MSCAPPS/hex13/";
-    pyFilePath = workingDir + "predict.py";
+    pyFilePath = workingDir + "service.py";
+    state = "NONE";
 
     connect(this, SIGNAL(readyReadStandardError()), this, SLOT(pyreadyReadStandardError()));
     connect(this, SIGNAL(readyReadStandardOutput()), this, SLOT(pyreadyReadStandardOutput()));
     connect(this, SIGNAL(started()), this, SLOT(pystarted()));
+    connect(this, SIGNAL(readyForInput()), this, SLOT(input()));
+    connect(this, SIGNAL(resultReady(std::string)), this, SLOT(result(std::string)));
+}
+
+HexNnetControl::~HexNnetControl()
+{
+    close();
 }
 
 void HexNnetControl::Start() {
@@ -19,65 +27,57 @@ void HexNnetControl::Start() {
     setWorkingDirectory(workingDir);
     start(python, arguments);
 
-    waitForFinished(-1);
-    std::cout << "Python ended..." << std::endl;
+    std::cout << "Python started..." << std::endl;
+}
+
+std::string HexNnetControl::getState() {
+    return state;
 }
 
 void HexNnetControl::pyreadyReadStandardError()
 {
-    qDebug("HexNnetControl::pyreadyReadStandardError()");
-    qDebug(readAllStandardError());
+    QByteArray qba = readAllStandardError();
+    std::string read = qba.toStdString();
+    std::cout << "HexNnetControl::pyreadyReadStandardError()" << std::endl;
+    std::cout << "PYTHON> " << read << std::endl;
 }
 
 void HexNnetControl::pyreadyReadStandardOutput()
 {
-    qDebug("HexNnetControl::pyreadyReadStandardOutput()");
-    qDebug(readAllStandardOutput());
+    std::cout << "HexNnetControl::pyreadyReadStandardOutput()" << std::endl;
+    QByteArray qba = readAllStandardOutput();
+    std::string read = qba.toStdString();
+
+    std::istringstream stream(read);
+    std::string line;
+    while(std::getline(stream, line)) {
+        std::cout << "PYTHON> " << line << std::endl;
+        if(line.compare("Enter input\r") == 0)
+        {
+            state = "INPUT";
+            emit readyForInput();
+        }
+        if(line.find("{Result:") != std::string::npos)
+        {
+            state = "RESULT";
+            emit resultReady(line);
+        }
+    }
 }
 
 void HexNnetControl::pystarted()
 {
-    qDebug("HexNnetControl::pystarted()");
+    std::cout << "HexNnetControl::pystarted()" << std::endl;
 }
 
-/*void HexNnetControl::pyreadyRead() {
-    std::cout << "SLOT myReadyRead" << std::endl;
-    //qDebug() << Q_FUNC_INFO;
-}
-
-void HexNnetControl::pyreadyReadStandardOutput() {
-    std::cout << "SLOT myReadyReadStandardOutput" << std::endl;
-
-    qDebug() << Q_FUNC_INFO;
-    // Note we need to add \n (it's like pressing enter key)
-    this->write(QString("myname" + QString("\n")).toLatin1());
-    // Next line no required
-    // qDebug() << this->readAll();
-    qDebug() << this->readAllStandardOutput();
-
-}*/
-
-/*HexNnetControl::~HexNnetControl()
+void HexNnetControl::input()
 {
-    pyProcess->close();
+    std::cout << "HexNnetControl::input()" << std::endl;
 }
 
-
-void HexNnetControl::Exec()
+void HexNnetControl::result(std::string result)
 {
-    std::cout << "Python starting" << std::endl;
-
-    QStringList arguments;
-    arguments << pyFile;
-    pyProcess = new QProcess(this);
-    pyProcess->setWorkingDirectory(programDir);
-    pyProcess->start(program, arguments);
-
-    if (!pyProcess->waitForStarted())
-    {
-        std::cout << "A problem occurs" << std::endl;
-        return;
-    }
-    std::cout << "Python opened" << std::endl;
-}*/
+    std::cout << "HexNnetControl::resoult()" << std::endl;
+    std::cout << result << std::endl;
+}
 

@@ -19,6 +19,8 @@ class HexCanvas : public QWidget
     Q_OBJECT
 public:
 
+    HexNnetControl* nnetctrl;
+
     unsigned short int HEXAGONSIZE; // 27: hexagon's radius
     unsigned short int PADDING; // 20: padding from widget's edges
     short int pointed; // last pointed hexangon's index

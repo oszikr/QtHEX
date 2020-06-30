@@ -5,6 +5,9 @@ HexCanvas::HexCanvas(QWidget *parent) : QWidget(parent), HEXAGONSIZE(27), PADDIN
 {
     setMouseTrackingEnabledTimer = new QTimer(this);
     connect(setMouseTrackingEnabledTimer, SIGNAL(timeout()), this, SLOT(setMouseTrackingEnabled()));
+    //nnetctrl = nullptr;
+    nnetctrl = new HexNnetControl(this);
+    nnetctrl->Start();
 }
 
 void HexCanvas::setStateSpace(HexStateSpace* stateSpace)
@@ -307,8 +310,14 @@ void HexCanvas::hint()
 void HexCanvas::hintTF()
 {
     std::cout << "Using NNET" << std::endl;
-    HexNnetControl nnetctrl(this);
-    nnetctrl.Start();
+    if(nnetctrl->getState().compare("INPUT") == 0)
+    {
+        //TODO
+        nnetctrl->write("\n");
+    }
+    else {
+        std::cout << "NNET is not loaded yet." << std::endl;
+    }
 }
 
 void HexCanvas::nextInfo()
