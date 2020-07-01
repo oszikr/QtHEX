@@ -191,17 +191,6 @@ HexStateSpace::color HexStateSpace::depthFirst(color* routeColoring, bool* edges
 
     if(routeColoring[cursor] == BLUE) // current field is blue
     {
-        if(cursor >= 0 && cursor < SIZE) // first row
-        {
-            edges[0] = true; // reached top edge
-        }
-        else if(cursor >= SIZE * (SIZE-1) && cursor < SIZE * SIZE) // last row
-        {
-            edges[1] = true; // reached down edge
-        }
-    }
-    else // (routeColoring[lastField] == RED)
-    {
         if(cursor % SIZE == 0) // first column
         {
             edges[0] = true; // reached left edge
@@ -209,6 +198,17 @@ HexStateSpace::color HexStateSpace::depthFirst(color* routeColoring, bool* edges
         else if(cursor % SIZE == 10) // last column
         {
             edges[1] = true; // reached right edge
+        }
+    }
+    else // (routeColoring[lastField] == RED)
+    {
+        if(cursor >= 0 && cursor < SIZE) // first row
+        {
+            edges[0] = true; // reached top edge
+        }
+        else if(cursor >= SIZE * (SIZE-1) && cursor < SIZE * SIZE) // last row
+        {
+            edges[1] = true; // reached down edge
         }
     }
     if(edges[0] == true && edges[1] == true)

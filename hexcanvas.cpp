@@ -132,11 +132,11 @@ void HexCanvas::paintEvent(QPaintEvent *event)
                 QPoint(hexagons[stateSpace->getLength()-1].center.x() + HEXAGONSIZE + 5, hexagons[stateSpace->getLength()-1].center.y() + HEXAGONSIZE + 5),
                 QColor(184,20,9),
                 painter);*/
-    painter.setPen(QColor(5,73,188));
+    painter.setPen(QColor(184,20,9));
     painter.drawPolyline(upBorderPoints);
     painter.drawPolyline(dnBorderPoints);
 
-    painter.setPen(QColor(184,20,9));
+    painter.setPen(QColor(5,73,188));
     painter.drawPolyline(ltBorderPoints);
     painter.drawPolyline(rtBorderPoints);
 
