@@ -1,6 +1,7 @@
 #ifndef HEXSTATESPACE_H
 #define HEXSTATESPACE_H
 #include <iostream>
+#include <sstream>
 
 class HexStateSpace
 {
@@ -27,6 +28,7 @@ public:
     void undo(); // set lastField to EMPTY
     color isWinner() const; // if the last field change make a winning state then return the winner plyer's color
     //long getHashCode() const;
+    std::string toJSON() const;
 
 private:
     unsigned short int SIZE; // table height/width

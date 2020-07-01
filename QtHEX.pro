@@ -25,6 +25,7 @@ HEADERS  += mainwindow.h \
     hexstatespace.h \
     hexcanvas.h \
     hexagon.hpp \
-    hexstrategycontrol.h
+    hexstrategycontrol.h \
+    json.hpp
 
 FORMS    += mainwindow.ui

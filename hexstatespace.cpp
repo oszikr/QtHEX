@@ -1,7 +1,7 @@
 #include "hexstatespace.h"
 
 #ifndef _HEXTABLESIZE_
-#define _HEXTABLESIZE_ 4
+#define _HEXTABLESIZE_ 13
 #endif
 
 // ctor
@@ -164,6 +164,22 @@ HexStateSpace::color HexStateSpace::isWinner() const
 {
     return null;
 }*/
+
+std::string HexStateSpace::toJSON() const
+{
+    std::stringstream ss;
+    ss << "[";
+    for (unsigned short int i = 0; i < SIZE * SIZE; i++)
+    {
+        if(i != 0)
+        {
+            ss << ",";
+        }
+        ss << stateSpace[i];
+    }
+    ss << "]";
+    return ss.str();
+}
 
 HexStateSpace::color HexStateSpace::depthFirst(color* routeColoring, bool* edges, const short int cursor) const
 {

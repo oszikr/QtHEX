@@ -19,14 +19,14 @@ public:
     void Start();
     std::string getState();
 public slots:
-    void pyreadyReadStandardError();
-    void pyreadyReadStandardOutput();
-    void pystarted();
-    void input();
-    void result(std::string result);
+    void readyReadStandardErrorSlot();
+    void readyReadStandardOutputSlot();
+    void startedSlot();
+    void inputSlot();
+    void resultSlot(std::string result);
 signals:
-    void readyForInput();
-    void resultReady(std::string result);
+    void readyForInputSignal();
+    void resultReadySignal(std::string result);
 private:
     QString python;
     QString workingDir;
