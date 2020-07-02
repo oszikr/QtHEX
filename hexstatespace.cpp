@@ -1,7 +1,7 @@
 #include "hexstatespace.h"
 
 #ifndef _HEXTABLESIZE_
-#define _HEXTABLESIZE_ 13
+#define _HEXTABLESIZE_ 3
 #endif
 
 // ctor
@@ -174,7 +174,7 @@ HexStateSpace::color HexStateSpace::depthFirst(color* routeColoring, bool* edges
         {
             edges[0] = true; // reached left edge
         }
-        else if(cursor % SIZE == 10) // last column
+        else if(cursor % SIZE == SIZE - 1) // last column
         {
             edges[1] = true; // reached right edge
         }
@@ -196,44 +196,44 @@ HexStateSpace::color HexStateSpace::depthFirst(color* routeColoring, bool* edges
     }
 
     // up neighbour is always exists if is is in rage
-    if(depthFirst(routeColoring, edges, cursor - _HEXTABLESIZE_) == stateSpace[lastField])
+    if(depthFirst(routeColoring, edges, cursor - SIZE) == stateSpace[lastField])
     {
         //std::cout << "up neighbour is always exists if is is in rage" << std::endl;
         return stateSpace[lastField];
     }
 
     // down neighbour is always exists if is is in rage
-    if(depthFirst(routeColoring, edges, cursor + _HEXTABLESIZE_) == stateSpace[lastField])
+    if(depthFirst(routeColoring, edges, cursor + SIZE) == stateSpace[lastField])
     {
         //std::cout << "down neighbour is always exists if is is in rage" << std::endl;
         return stateSpace[lastField];
     }
 
     // if left neighbour is exists
-    if( cursor % _HEXTABLESIZE_ > 0 && depthFirst(routeColoring, edges, cursor - 1) == stateSpace[lastField])
+    if( cursor % SIZE > 0 && depthFirst(routeColoring, edges, cursor - 1) == stateSpace[lastField])
     {
         //std::cout << "if left neighbour is exists" << std::endl;
         return stateSpace[lastField];
     }
 
     // if right neighbour is exists
-    if( cursor % _HEXTABLESIZE_ < _HEXTABLESIZE_ - 1 && depthFirst(routeColoring, edges, cursor + 1) == stateSpace[lastField])
+    if( cursor % SIZE < SIZE - 1 && depthFirst(routeColoring, edges, cursor + 1) == stateSpace[lastField])
     {
         //std::cout << "if right neighbour is exists" << std::endl;
         return stateSpace[lastField];
     }
 
-    // if upper neighbour is exists
-    if( cursor % _HEXTABLESIZE_ > 0 && depthFirst(routeColoring, edges, cursor - _HEXTABLESIZE_ - 1) == stateSpace[lastField])
+    // if top neighbour is exists
+    if( cursor % SIZE < SIZE - 1 && depthFirst(routeColoring, edges, cursor - SIZE + 1) == stateSpace[lastField])
     {
-        //std::cout << "if upper neighbour is exists" << std::endl;
+        //std::cout << "if top neighbour is exists" << std::endl;
         return stateSpace[lastField];
     }
 
-    // if downer neighbour is exists
-    if( cursor % _HEXTABLESIZE_ < _HEXTABLESIZE_ - 1 && depthFirst(routeColoring, edges, cursor + _HEXTABLESIZE_ + 1) == stateSpace[lastField])
+    // if buttom neighbour is exists
+    if( cursor % SIZE != 0 && depthFirst(routeColoring, edges, cursor + SIZE - 1) == stateSpace[lastField])
     {
-        //std::cout << "if downer neighbour is exists" << std::endl;
+        //std::cout << "if buttom neighbour is exists" << std::endl;
         return stateSpace[lastField];
     }
 
