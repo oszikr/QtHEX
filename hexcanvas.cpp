@@ -5,9 +5,8 @@ HexCanvas::HexCanvas(QWidget *parent) : QWidget(parent), HEXAGONSIZE(27), PADDIN
 {
     setMouseTrackingEnabledTimer = new QTimer(this);
     connect(setMouseTrackingEnabledTimer, SIGNAL(timeout()), this, SLOT(setMouseTrackingEnabled()));
-    //nnetctrl = nullptr;
     nnetctrl = new HexNnetControl(this);
-    nnetctrl->Start();
+    //nnetctrl->Start();
 }
 
 void HexCanvas::setStateSpace(HexStateSpace* stateSpace)

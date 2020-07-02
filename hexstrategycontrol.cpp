@@ -12,14 +12,13 @@ short int HexStrategyControl::getWinningStep() const
     // level := 0 -- A player's level
     for (unsigned short int i = 0; i < hex.getLength(); i++)
     {
-        std::cout << "|";
+        std::cout << i+1 << "/" << hex.getLength() << std::endl;
         if (hex.get(i) == HexStateSpace::EMPTY) { // Empty Field
             HexStateSpace nextHex(hex); // Copy the state of the table
             nextHex.set(i, A); // Mark the field for the current player
             HexStateSpace::color winner = alphaBetaRecursion(nextHex, 1);
             if (winner == A)
             {
-                std::cout << std::endl;
                 return i;
             }
         }
