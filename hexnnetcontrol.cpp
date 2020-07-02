@@ -19,7 +19,9 @@ HexNnetControl::~HexNnetControl()
     close();
 }
 
-void HexNnetControl::Start() {
+void HexNnetControl::Start(const HexStateSpace* hex)
+{
+    this->hex = hex;
     std::cout << "Python starting..." << std::endl;
 
     QStringList arguments;
@@ -56,10 +58,12 @@ void HexNnetControl::readyReadStandardOutputSlot()
         std::cout << "PYTHON> " << line << std::endl;
         if(line.compare("Enter input\r") == 0)
         {
+            //std::cout << "emit readyForInputSignal()" << std::endl;
             emit readyForInputSignal();
         }
-        if(line.find("{\"Result\":") != std::string::npos)
+        if(line.find("Result") != std::string::npos)
         {
+            //std::cout << "emit resultReadySignal()" << std::endl;
             emit resultReadySignal(line);
         }
     }
@@ -80,8 +84,37 @@ void HexNnetControl::inputSlot()
 void HexNnetControl::resultSlot(std::string result)
 {
     state = "WORKING";
-    std::cout << "HexNnetControl::resoult()" << std::endl;
+    std::cout << "HexNnetControl::result()" << std::endl;
     std::cout << result << std::endl;
+
+    nlohmann::json resultObj = nlohmann::json::parse(result);
+    //std::cout << "resultObj.dump()" << std::endl;
+    //std::cout << resultObj.dump() << std::endl;
+
+    std::vector<double> resoultVect = resultObj["Result"];
+    unsigned short int r = 0;
+    short int maxr = -1;
+    short int maxi = -1;
+    for (unsigned short int i = 0; i < hex->getLength(); i++)
+    {
+        if (hex->get(i) == HexStateSpace::EMPTY)
+        { // Empty Field
+            if(maxr == -1) {
+                maxr = r;
+                maxi = i;
+            }
+            else if(resoultVect[maxr] < resoultVect[r])
+            {
+                maxr = r;
+                maxi = i;
+            }
+            r++;
+        }
+    }
+    std::cout << "The Predicted field's array index is: " << maxi << std::endl;
+    std::cout << "The Predicted field's matrix index is: [" <<
+                 maxi/hex->getSize()+1 << ". row, " << maxi%hex->getSize()+1 << ". col]" << std::endl;
+    std::cout << "The Predicted field's p = " << resoultVect[maxr] << std::endl;
 }
 
 void HexNnetControl::hintTF(HexStateSpace* curStateSpace, HexStateSpace::color player) {

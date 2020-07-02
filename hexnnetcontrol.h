@@ -18,7 +18,7 @@ class HexNnetControl : public QProcess
 public:
     HexNnetControl(QObject *parent = 0);
     ~HexNnetControl();
-    void Start();
+    void Start(const HexStateSpace* hex);
     std::string getState();
     void hintTF(HexStateSpace* curStateSpace, HexStateSpace::color player);
 public slots:
@@ -35,6 +35,7 @@ private:
     QString workingDir;
     QString pyFilePath;
     std::string state;
+    const HexStateSpace* hex;
 };
 
 #endif // HEXNNETCONTROL_H

@@ -6,15 +6,24 @@ HexCanvas::HexCanvas(QWidget *parent) : QWidget(parent), HEXAGONSIZE(27), PADDIN
     setMouseTrackingEnabledTimer = new QTimer(this);
     connect(setMouseTrackingEnabledTimer, SIGNAL(timeout()), this, SLOT(setMouseTrackingEnabled()));
     nnetctrl = new HexNnetControl(this);
-    nnetctrl->Start();
 }
 
 void HexCanvas::setStateSpace(HexStateSpace* stateSpace)
 {
     this->stateSpace = stateSpace;
+
+    if(stateSpace->getSize() == 13)
+    {
+        nnetctrl->Start(stateSpace);
+    }
+    else
+    {
+        std::cout << "Python NNET process did not started, because table size is not 13." << std::endl;
+    }
+
     this->hexagons.clear();
 
-    if(stateSpace->getSize() < 9) PADDING += (9-stateSpace->getSize())*HEXAGONSIZE;
+    //if(stateSpace->getSize() < 9) PADDING += (9-stateSpace->getSize())*HEXAGONSIZE;
 
     setFixedSize(QSize(
                 HEXAGONWIDTH * stateSpace->getSize() + (HEXAGONWIDTH * (stateSpace->getSize()-1) / 2) + 2*PADDING,
@@ -87,16 +96,23 @@ void HexCanvas::setStateSpace(HexStateSpace* stateSpace)
             hexagons[0].center.y()
     );
 
-    tmp.setY(tmp.y() + 3*HEXAGONHEIGHT);
-
+    tmp.setY(tmp.y() + 2.5*HEXAGONHEIGHT);
     nextInfoBtn = Hexagon(tmp, HEXAGONSIZE);
-    tmp.setY(tmp.y() + HEXAGONHEIGHT);
+
+    tmp.setY(tmp.y() + HEXAGONHEIGHT*3/4);
+    tmp.setX(tmp.x() + HEXAGONWIDTH/2);
     hintBtn = Hexagon(tmp, HEXAGONSIZE);
-    tmp.setY(tmp.y() + HEXAGONHEIGHT);
+
+    tmp.setY(tmp.y() + HEXAGONHEIGHT*3/4);
+    tmp.setX(tmp.x() + HEXAGONWIDTH/2);
     hintBtnTF = Hexagon(tmp, HEXAGONSIZE);
-    tmp.setY(tmp.y() + HEXAGONHEIGHT);
+
+    tmp.setY(tmp.y() + HEXAGONHEIGHT*3/4);
+    tmp.setX(tmp.x() + HEXAGONWIDTH/2);
     prevBtn = Hexagon(tmp, HEXAGONSIZE);
-    tmp.setY(tmp.y() + HEXAGONHEIGHT);
+
+    tmp.setY(tmp.y() + HEXAGONHEIGHT*3/4);
+    tmp.setX(tmp.x() + HEXAGONWIDTH/2);
     clearBtn = Hexagon(tmp, HEXAGONSIZE);
 
     setMouseTrackingEnabled();
@@ -174,7 +190,7 @@ void HexCanvas::paintEvent(QPaintEvent *event)
     painter.end();
 }
 
-void HexCanvas::paintTriangle(const QPoint& a, const QPoint& b, const QPoint& c, const QColor& qcolor, QPainter& painter)
+/*void HexCanvas::paintTriangle(const QPoint& a, const QPoint& b, const QPoint& c, const QColor& qcolor, QPainter& painter)
 {
      QVector<QPoint> points;
      points.push_back(a);
@@ -187,7 +203,7 @@ void HexCanvas::paintTriangle(const QPoint& a, const QPoint& b, const QPoint& c,
 
      painter.setBrush(brush);
      painter.drawPolygon(QPolygon(points));
-}
+}*/
 
 void HexCanvas::paintHex(const Hexagon& hexagon, const QColor& qcolor, QPainter& painter)
 {

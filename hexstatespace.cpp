@@ -1,7 +1,7 @@
 #include "hexstatespace.h"
 
 #ifndef _HEXTABLESIZE_
-#define _HEXTABLESIZE_ 3
+#define _HEXTABLESIZE_ 13
 #endif
 
 // ctor
