@@ -9,6 +9,8 @@
 #include <QStringList>
 #include <QProcess>
 #include <QDebug>
+#include "hexstatespace.h"
+#include "json.hpp"
 
 class HexNnetControl : public QProcess
 {
@@ -18,6 +20,7 @@ public:
     ~HexNnetControl();
     void Start();
     std::string getState();
+    void hintTF(HexStateSpace* curStateSpace, HexStateSpace::color player);
 public slots:
     void readyReadStandardErrorSlot();
     void readyReadStandardOutputSlot();

@@ -311,24 +311,7 @@ void HexCanvas::hintTF()
     std::cout << "Using NNET" << std::endl;
     if(nnetctrl->getState().compare("INPUT") == 0)
     {
-        std::vector<std::vector<HexStateSpace::color>> statespaces;
-        HexStateSpace* hex = stateSpace;
-        for (unsigned short int i = 0; i < hex->getLength(); i++)
-        {
-            if (hex->get(i) == HexStateSpace::EMPTY) { // Empty Field
-                HexStateSpace nextHex(*hex); // Copy the state of the table
-                nextHex.set(i, player); // Mark the field for the current player
-
-                HexStateSpace::color* sp = nextHex.getSpace();
-                unsigned int n = nextHex.getLength();
-                std::vector<HexStateSpace::color> stateSpaceVector(sp, sp+n);
-                statespaces.push_back(stateSpaceVector);
-            }
-        }
-        nlohmann::json input(statespaces);
-
-        nnetctrl->write(input.dump().c_str());
-        nnetctrl->write("\n");
+        nnetctrl->hintTF(stateSpace, player);
     }
     else {
         std::cout << "NNET is not loaded yet." << std::endl;
