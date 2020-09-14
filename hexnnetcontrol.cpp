@@ -2,8 +2,16 @@
 
 HexNnetControl::HexNnetControl(QObject *parent) : QProcess(parent)
 {
-    python = "C:\\Users\\Oszi Krisztian\\AppData\\Local\\Programs\\Python\\Python36\\python.exe";
-    workingDir = "C:/Users/Oszi Krisztian/Documents/MSCAPPS/hex13/";
+    #ifdef __linux__
+        python = "/usr/bin/python3";
+        workingDir = "/home/oszikr/PycharmProjects/hex13/";
+    #elif _WIN32
+        python = "C:\\Users\\oszikr\\AppData\\Local\\Programs\\Python\\Python36\\python.exe";
+        workingDir = "C:/Users/oszikr/Documents/MSCAPPS/hex13/";
+    #else
+        # not supported
+    #endif
+
     pyFilePath = workingDir + "service.py";
     state = "NONE";
 
@@ -56,14 +64,14 @@ void HexNnetControl::readyReadStandardOutputSlot()
     std::string line;
     while(std::getline(stream, line)) {
         std::cout << "PYTHON> " << line << std::endl;
-        if(line.compare("Enter input\r") == 0)
+        if(line.compare("Enter input\r") == 0 || line.compare("Enter input") == 0) // \r for windows
         {
-            //std::cout << "emit readyForInputSignal()" << std::endl;
+            std::cout << "emit readyForInputSignal()" << std::endl;
             emit readyForInputSignal();
         }
         if(line.find("Result") != std::string::npos)
         {
-            //std::cout << "emit resultReadySignal()" << std::endl;
+            std::cout << "emit resultReadySignal()" << std::endl;
             emit resultReadySignal(line);
         }
     }
