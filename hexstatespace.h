@@ -15,8 +15,9 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const HexStateSpace& obj);
 
-    unsigned short int getSize() const; // table height/width. It is 11.
-    unsigned short int getLength() const; // count of fields. It is 11*11.
+    unsigned short int getSize() const; // table height/width. It is 13.
+    unsigned short int getLength() const; // count of fields. It is 13*13.
+    unsigned short int getCount() const; // count of steps
     color* getSpace() const; // the 11*11 sized vector represents the fields and colors on the table
 
     short int getLast() const; // get last clicked field vector like index
@@ -33,6 +34,7 @@ private:
     unsigned short int LENGTH; // cout of fields
     color* stateSpace; // state spece
     short int lastField; // last clicked field vector like index
+    unsigned short int count; // count of steps
 
     // Depth-first search in the hex board. The search shearch edges connections with the current color.
     // Used by isWinner(). coloring and edges arrays have to init.

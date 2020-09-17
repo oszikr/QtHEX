@@ -135,8 +135,11 @@ void HexNnetControl::hintTF(HexStateSpace* curStateSpace, HexStateSpace::color p
             nextHex.set(i, player); // Mark the field for the current player
 
             HexStateSpace::color* sp = nextHex.getSpace();
+            HexStateSpace::color count =
+                    (nextHex.getCount() < 16 ? HexStateSpace::EMPTY : (nextHex.getCount() < 32 ? HexStateSpace::BLUE : HexStateSpace::RED));
             unsigned int n = nextHex.getLength();
-            std::vector<HexStateSpace::color> stateSpaceVector(sp, sp+n);
+            std::vector<HexStateSpace::color> stateSpaceVector(sp, sp+n); // copy ctor for vector.
+            stateSpaceVector.push_back(count);
             statespaces.push_back(stateSpaceVector);
         }
     }

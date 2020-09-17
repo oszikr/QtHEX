@@ -5,7 +5,7 @@
 #endif
 
 // ctor
-HexStateSpace::HexStateSpace(): SIZE(_HEXTABLESIZE_), LENGTH(SIZE*SIZE), lastField(-1)
+HexStateSpace::HexStateSpace(): SIZE(_HEXTABLESIZE_), LENGTH(SIZE*SIZE), lastField(-1), count(0)
 {
     stateSpace = new color[SIZE * SIZE];
     for (unsigned short int i = 0; i < SIZE * SIZE; i++)
@@ -15,13 +15,14 @@ HexStateSpace::HexStateSpace(): SIZE(_HEXTABLESIZE_), LENGTH(SIZE*SIZE), lastFie
 }
 
 // copy ctor
-HexStateSpace::HexStateSpace(const HexStateSpace& other): SIZE(_HEXTABLESIZE_), LENGTH(SIZE*SIZE), lastField(-1)
+HexStateSpace::HexStateSpace(const HexStateSpace& other): SIZE(_HEXTABLESIZE_), LENGTH(SIZE*SIZE), lastField(-1), count(0)
 {
     stateSpace = new color[SIZE * SIZE];
     for (unsigned short int i = 0; i < SIZE * SIZE; i++)
     {
         stateSpace[i] = other.stateSpace[i];
     }
+    count = other.count;
 }
 
 // =operator
@@ -33,6 +34,7 @@ HexStateSpace& HexStateSpace::operator=(const HexStateSpace& other)
         {
             stateSpace[i] = other.stateSpace[i];
         }
+        count = other.count;
     }
     return *this;
 }
@@ -77,6 +79,11 @@ unsigned short int HexStateSpace::getLength() const
     return LENGTH;
 }
 
+unsigned short int HexStateSpace::getCount() const
+{
+    return count;
+}
+
 HexStateSpace::color* HexStateSpace::getSpace() const
 {
     return stateSpace;
@@ -84,7 +91,7 @@ HexStateSpace::color* HexStateSpace::getSpace() const
 
 HexStateSpace::color HexStateSpace::get(unsigned short int i, unsigned short int j) const
 {
-    return stateSpace[SIZE * i + j];
+    return get(SIZE * i + j);
 }
 
 HexStateSpace::color HexStateSpace::get(unsigned short int i) const
@@ -94,14 +101,14 @@ HexStateSpace::color HexStateSpace::get(unsigned short int i) const
 
 void HexStateSpace::set(unsigned short int i, unsigned short int j, color value)
 {
-    lastField = (SIZE * i + j);
-    stateSpace[lastField] = value;
+    set(SIZE * i + j, value);
 }
 
 void HexStateSpace::set(unsigned short int i, color value)
 {
     lastField = i;
     stateSpace[lastField] = value;
+    count++;
 }
 
 void HexStateSpace::clear()
@@ -110,11 +117,13 @@ void HexStateSpace::clear()
     {
         stateSpace[i] = EMPTY;
     }
+    count = 0;
 }
 
 void HexStateSpace::undo()
 {
     stateSpace[lastField] = EMPTY;
+    count--;
 }
 
 // Starts depth-first search in the table to recognize the winner state
