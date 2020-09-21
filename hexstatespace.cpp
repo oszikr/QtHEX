@@ -248,3 +248,115 @@ HexStateSpace::color HexStateSpace::depthFirst(color* routeColoring, bool* edges
 
     return EMPTY;
 }
+
+short int HexStateSpace::heuristicScore() const
+{
+
+
+
+    return 0;
+}
+
+
+ListGraph& HexStateSpace::toGraph() const
+{
+    ListGraph g;
+    ListGraph::Node** nodes = new ListGraph::Node*[SIZE*SIZE];
+    ListGraph::EdgeMap<int> length(g);
+
+    for(short int cursor = 0; cursor < this->LENGTH; cursor++)
+    {
+        ListGraph::Node node = g.addNode();
+        nodes[0] = &node;
+    }
+
+    for(short int cursor = 0; cursor < this->LENGTH; cursor++)
+    {
+        color curPlayer = stateSpace[lastField];
+        if(stateSpace[cursor] != curPlayer)  continue; // is not owned by the current player
+
+        ListGraph::Node* node1 = nodes[cursor];
+        std::vector<short int> neighbours;
+
+        // up neighbour is always exists if is is in rage
+        if(cursor - SIZE >= 0)
+        {
+            //std::cout << "up neighbour is always exists if is is in rage" << std::endl;
+            short int neighbour = cursor - SIZE;
+            neighbours.push_back(neighbour);
+        }
+
+        // down neighbour is always exists if is is in rage
+        if(cursor + SIZE < SIZE * SIZE)
+        {
+            //std::cout << "down neighbour is always exists if is is in rage" << std::endl;
+            short int neighbour = cursor + SIZE;
+            neighbours.push_back(neighbour);
+        }
+
+        // if left neighbour is exists
+        if( cursor % SIZE > 0)
+        {
+            //std::cout << "if left neighbour is exists" << std::endl;
+            short int neighbour = cursor - 1;
+            neighbours.push_back(neighbour);
+        }
+
+        // if right neighbour is exists
+        if(cursor % SIZE < SIZE - 1)
+        {
+            //std::cout << "if right neighbour is exists" << std::endl;
+            short int neighbour = cursor + 1;
+            neighbours.push_back(neighbour);
+        }
+
+        // if top neighbour is exists
+        if(cursor % SIZE < SIZE - 1 && cursor > SIZE - 1)
+        {
+            //std::cout << "if top neighbour is exists" << std::endl;
+            short int neighbour = cursor - SIZE + 1;
+            neighbours.push_back(neighbour);
+        }
+
+        // if buttom neighbour is exists
+        if( cursor % SIZE != 0 && cursor < SIZE * (SIZE-1))
+        {
+            //std::cout << "if buttom neighbour is exists" << std::endl;
+            short int neighbour = cursor + SIZE - 1;
+            neighbours.push_back(neighbour);
+        }
+
+        for (std::vector<short int>::iterator it = neighbours.begin() ; it != neighbours.end(); ++it)
+        {
+            short int neighbour = *it;
+            ListGraph::Node* node2 = nodes[neighbour];
+            if(stateSpace[neighbour] == curPlayer)
+            {
+                ListGraph::Edge edge = g.addEdge(*node1, *node2);
+                length[edge] = 0;
+            }
+            else if(stateSpace[neighbour] != EMPTY)
+            {
+                ListGraph::Edge edge = g.addEdge(*node1, *node2);
+                length[edge] = 1;
+            }
+        }
+
+        //TODO add 4 soure and target
+
+        delete[] nodes;
+        return g;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+

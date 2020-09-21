@@ -3,6 +3,16 @@
 #include <iostream>
 #include <sstream>
 
+#include <lemon/list_graph.h>
+#include <lemon/maps.h>
+#include <lemon/dijkstra.h>
+
+using namespace lemon;
+using namespace std;
+
+template <typename T> using NodeMap = ListGraph::NodeMap<T>;
+template <typename T> using EdgeMap = ListGraph::EdgeMap<T>;
+
 class HexStateSpace
 {
 public:
@@ -39,6 +49,8 @@ private:
     // Depth-first search in the hex board. The search shearch edges connections with the current color.
     // Used by isWinner(). coloring and edges arrays have to init.
     color depthFirst(color* routeColoring, bool *edges, short int cursor) const;
+    short int heuristicScore() const;
+    ListGraph &toGraph() const;
 };
 
 #endif // HEXSTATESPACE_H
