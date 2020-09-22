@@ -13,19 +13,21 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
+    hexabcontrol.cpp \
+    hexminmaxcontrol.cpp \
     hexnnetcontrol.cpp \
         mainwindow.cpp \
     hexstatespace.cpp \
     test.cpp \
-    hexcanvas.cpp \
-    hexstrategycontrol.cpp
+    hexcanvas.cpp
 
 HEADERS  += mainwindow.h \
+    hexabcontrol.h \
+    hexminmaxcontrol.h \
     hexnnetcontrol.h \
     hexstatespace.h \
     hexcanvas.h \
     hexagon.hpp \
-    hexstrategycontrol.h \
     json.hpp
 
 FORMS    += mainwindow.ui

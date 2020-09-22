@@ -101,11 +101,15 @@ void HexCanvas::setStateSpace(HexStateSpace* stateSpace)
 
     tmp.setY(tmp.y() + HEXAGONHEIGHT*3/4);
     tmp.setX(tmp.x() + HEXAGONWIDTH/2);
-    hintBtn = Hexagon(tmp, HEXAGONSIZE);
+    hintBtnAB = Hexagon(tmp, HEXAGONSIZE);
 
     tmp.setY(tmp.y() + HEXAGONHEIGHT*3/4);
     tmp.setX(tmp.x() + HEXAGONWIDTH/2);
     hintBtnTF = Hexagon(tmp, HEXAGONSIZE);
+
+    tmp.setY(tmp.y() + HEXAGONHEIGHT*3/4);
+    tmp.setX(tmp.x() + HEXAGONWIDTH/2);
+    hintBtnHeur = Hexagon(tmp, HEXAGONSIZE);
 
     tmp.setY(tmp.y() + HEXAGONHEIGHT*3/4);
     tmp.setX(tmp.x() + HEXAGONWIDTH/2);
@@ -172,8 +176,9 @@ void HexCanvas::paintEvent(QPaintEvent *event)
             paintHex(hexagon, qcolor, painter);
 
         }
-        paintHex(hintBtn,       QColor(245,245,0), painter);
-        paintHex(hintBtnTF,     QColor(255,165,0),  painter);
+        paintHex(hintBtnAB,     QColor(245,245,0), painter);
+        paintHex(hintBtnTF,     QColor(255,165,0), painter);
+        paintHex(hintBtnHeur,   QColor(128,0,128), painter);
         paintHex(nextInfoBtn,   QColor(4,188,44),  painter);
         paintHex(prevBtn,       QColor(5,73,188),  painter);
         paintHex(clearBtn,      QColor(184,20,9),  painter);
@@ -279,11 +284,12 @@ void HexCanvas::mouseReleaseEvent(QMouseEvent *event)
     }
     else
     {
-        if(isHex(hit, nextInfoBtn))     nextInfo();
-        else if(isHex(hit, hintBtn))    hint();
-        else if(isHex(hit, hintBtnTF))  hintTF();
-        else if(isHex(hit, prevBtn))    prev();
-        else if(isHex(hit, clearBtn))   clear();
+        if(isHex(hit, nextInfoBtn))         nextInfo();
+        else if(isHex(hit, hintBtnAB))      hintAB();
+        else if(isHex(hit, hintBtnTF))      hintTF();
+        else if(isHex(hit, hintBtnHeur))    hintHeur();
+        else if(isHex(hit, prevBtn))        prev();
+        else if(isHex(hit, clearBtn))       clear();
     }
 }
 
@@ -301,7 +307,7 @@ void HexCanvas::setMouseTrackingEnabled()
     setMouseTracking(true);
 }
 
-void HexCanvas::hint()
+void HexCanvas::hintAB()
 {  
     HexStrategyControl ctrl(*stateSpace, player, (player == HexStateSpace::BLUE ? HexStateSpace::RED : HexStateSpace::BLUE) );
 
@@ -332,6 +338,20 @@ void HexCanvas::hintTF()
     else {
         std::cout << "NNET is not loaded yet." << std::endl;
     }
+}
+
+void HexCanvas::hintHeur()
+{
+    std::cout << "Using Heuristic" << std::endl;
+    HexStateSpace::color oppPlayer = player == HexStateSpace::BLUE ? HexStateSpace::RED : HexStateSpace::BLUE;
+    short int h_player = stateSpace->heuristicScore(player);
+    short int h_oppalyer = stateSpace->heuristicScore(oppPlayer);
+
+    std::cout << (player == HexStateSpace::BLUE ? "\e[0;34mBlue" : "\e[0;31mRed") << "\e[m." << " palyer's score is: " << h_player << std::endl;
+    std::cout << "Other palyer's score is: " << h_oppalyer << std::endl;
+
+    short int score = h_player - h_oppalyer;
+    std::cout << "Final score: " << score << std::endl;
 }
 
 void HexCanvas::nextInfo()

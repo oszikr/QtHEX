@@ -9,7 +9,7 @@
 #include <QTimer>
 #include "hexstatespace.h"
 #include "hexagon.hpp"
-#include "hexstrategycontrol.h"
+#include "hexabcontrol.h"
 #include "hexnnetcontrol.h"
 #include "json.hpp"
 
@@ -38,8 +38,9 @@ public:
     QTimer* setMouseTrackingEnabledTimer; // timer to get cusor coordinates and highlight pointed hexagon
     HexStateSpace::color player; // next player
     Hexagon nextInfoBtn; // green button: cout next player's color (green)
-    Hexagon hintBtn; // build alfa/beta game three (yellow)
+    Hexagon hintBtnAB; // build alfa/beta game three (yellow)
     Hexagon hintBtnTF; // predicting with nnet (orange)
+    Hexagon hintBtnHeur; // get heuristic value (purple)
     Hexagon prevBtn; // roll back last move (blue)
     Hexagon clearBtn; // clear table (red)
 
@@ -62,8 +63,9 @@ signals:
 public slots:
     void setMouseTrackingEnabled(); // qt tracking mouse coords
     void nextInfo(); // green button: cout next player's color (green)
-    void hint(); // build alfa/beta game three (yellow)
+    void hintAB(); // build alfa/beta game three (yellow)
     void hintTF(); // predicting with nnet (orange)
+    void hintHeur(); // get heuristic value (purple)
     void prev(); // roll back last move (blue)
     void clear(); // clear table (red)
 

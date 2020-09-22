@@ -251,14 +251,11 @@ HexStateSpace::color HexStateSpace::depthFirst(color* routeColoring, bool* edges
 
 short int HexStateSpace::heuristicScore() const
 {
-
-
-
-    return 0;
+    color player = stateSpace[lastField];
+    return heuristicScore(player);
 }
 
-
-ListGraph& HexStateSpace::toGraph() const
+short int HexStateSpace::heuristicScore(color player) const
 {
     ListGraph g;
     ListGraph::Node** nodes = new ListGraph::Node*[SIZE*SIZE];
@@ -272,8 +269,7 @@ ListGraph& HexStateSpace::toGraph() const
 
     for(short int cursor = 0; cursor < this->LENGTH; cursor++)
     {
-        color curPlayer = stateSpace[lastField];
-        if(stateSpace[cursor] != curPlayer)  continue; // is not owned by the current player
+        if(stateSpace[cursor] != player)  continue; // is not owned by the current player
 
         ListGraph::Node* node1 = nodes[cursor];
         std::vector<short int> neighbours;
@@ -330,7 +326,7 @@ ListGraph& HexStateSpace::toGraph() const
         {
             short int neighbour = *it;
             ListGraph::Node* node2 = nodes[neighbour];
-            if(stateSpace[neighbour] == curPlayer)
+            if(stateSpace[neighbour] == player)
             {
                 ListGraph::Edge edge = g.addEdge(*node1, *node2);
                 length[edge] = 0;
@@ -341,12 +337,60 @@ ListGraph& HexStateSpace::toGraph() const
                 length[edge] = 1;
             }
         }
-
-        //TODO add 4 soure and target
-
-        delete[] nodes;
-        return g;
     }
+
+    //TODO add 4 soure and target
+    ListGraph::Node blue_node_s = g.addNode();
+    ListGraph::Node blue_node_t = g.addNode();
+    ListGraph::Node red_node_s = g.addNode();
+    ListGraph::Node red_node_t = g.addNode();
+
+    // blue left
+    for(short int cursor = 0; cursor < LENGTH; cursor += SIZE)
+    {
+        ListGraph::Edge edge = g.addEdge(blue_node_s, *nodes[cursor]);
+        length[edge] = 0;
+    }
+    // blue right
+    for(short int cursor = SIZE-1; cursor < LENGTH; cursor += SIZE)
+    {
+        ListGraph::Edge edge = g.addEdge(*nodes[cursor], blue_node_t);
+        length[edge] = 0;
+    }
+
+    // red top
+    for(short int cursor = 0; cursor < SIZE; cursor++)
+    {
+        ListGraph::Edge edge = g.addEdge(red_node_s, *nodes[cursor]);
+        length[edge] = 0;
+    }
+    // red bottom
+    for(short int cursor = SIZE * (SIZE-1); cursor < LENGTH; cursor++)
+    {
+        ListGraph::Edge edge = g.addEdge(*nodes[cursor], red_node_t);
+        length[edge] = 0;
+    }
+
+    delete[] nodes;
+
+    ListGraph::Node* s;
+    ListGraph::Node* t;
+    if(player == BLUE) {
+        s = &blue_node_s;
+        t = &blue_node_t;
+    }
+    if(player == RED) {
+        s = &red_node_s;
+        t = &red_node_t;
+    }
+
+    NodeMap<int> dist(g);
+
+    dijkstra(g, length).distMap(dist).run(*s, *t);
+
+    std::cout << "heuristicScore>" << player << ": " << dist[*t] << std::endl;
+
+    return dist[*t];
 }
 
 

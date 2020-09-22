@@ -38,6 +38,8 @@ public:
     void clear(); // fill the statespacee with EMPTY
     void undo(); // set lastField to EMPTY
     color isWinner() const; // if the last field change make a winning state then return the winner plyer's color
+    short int heuristicScore() const;
+    short int heuristicScore(color player) const;
 
 private:
     unsigned short int SIZE; // table height/width
@@ -49,8 +51,6 @@ private:
     // Depth-first search in the hex board. The search shearch edges connections with the current color.
     // Used by isWinner(). coloring and edges arrays have to init.
     color depthFirst(color* routeColoring, bool *edges, short int cursor) const;
-    short int heuristicScore() const;
-    ListGraph &toGraph() const;
 };
 
 #endif // HEXSTATESPACE_H
