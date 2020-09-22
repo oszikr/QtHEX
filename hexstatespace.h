@@ -2,6 +2,8 @@
 #define HEXSTATESPACE_H
 #include <iostream>
 #include <sstream>
+#include <cmath>
+#include <map>
 
 #include <lemon/list_graph.h>
 #include <lemon/maps.h>

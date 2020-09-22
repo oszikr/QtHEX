@@ -47,7 +47,7 @@ HexStateSpace::~HexStateSpace()
 
 std::ostream& operator<<(std::ostream& os, const HexStateSpace& obj)
 {
-    os << "Hex State Space at " << &obj << std::endl;
+    os << "Hex State Space at " << &obj << endl;
     for (unsigned short int i = 0; i < obj.SIZE; i++)
     {
         for (unsigned short int j = 0; j < obj.SIZE; j++)
@@ -59,7 +59,7 @@ std::ostream& operator<<(std::ostream& os, const HexStateSpace& obj)
             else
                 os << " \e[0;37m" << obj.get(i, j) << "\e[m";
         }
-        os << std::endl;
+        os << endl;
     }
     return os;
 }
@@ -147,19 +147,19 @@ HexStateSpace::color HexStateSpace::isWinner() const
     color winner = depthFirst(routeColoring, edges, lastField);
 
     // debug - do not remove
-    /*std::cout << ">>> CURRENT ROUTING: " << std::endl;
+    /*cout << ">>> CURRENT ROUTING: " << endl;
     for (unsigned short int i = 0; i < SIZE; i++)
     {
         for (unsigned short int j = 0; j < SIZE; j++)
         {
             if(routeColoring[SIZE * i + j] == HexStateSpace::RED)
-                std::cout << " \e[0;31m" << routeColoring[SIZE * i + j] << "\e[m";
+                cout << " \e[0;31m" << routeColoring[SIZE * i + j] << "\e[m";
             else if(routeColoring[SIZE * i + j] == HexStateSpace::BLUE)
-                std::cout << " \e[0;34m" << routeColoring[SIZE * i + j] << "\e[m";
+                cout << " \e[0;34m" << routeColoring[SIZE * i + j] << "\e[m";
             else
-                std::cout << " \e[0;37m" << routeColoring[SIZE * i + j] << "\e[m";
+                cout << " \e[0;37m" << routeColoring[SIZE * i + j] << "\e[m";
         }
-        std::cout << std::endl;
+        cout << endl;
     }*/
     // /debug
 
@@ -207,42 +207,42 @@ HexStateSpace::color HexStateSpace::depthFirst(color* routeColoring, bool* edges
     // up neighbour is always exists if is is in rage
     if(depthFirst(routeColoring, edges, cursor - SIZE) == stateSpace[lastField])
     {
-        //std::cout << "up neighbour is always exists if is is in rage" << std::endl;
+        //cout << "up neighbour is always exists if is is in rage" << endl;
         return stateSpace[lastField];
     }
 
     // down neighbour is always exists if is is in rage
     if(depthFirst(routeColoring, edges, cursor + SIZE) == stateSpace[lastField])
     {
-        //std::cout << "down neighbour is always exists if is is in rage" << std::endl;
+        //cout << "down neighbour is always exists if is is in rage" << endl;
         return stateSpace[lastField];
     }
 
     // if left neighbour is exists
     if( cursor % SIZE > 0 && depthFirst(routeColoring, edges, cursor - 1) == stateSpace[lastField])
     {
-        //std::cout << "if left neighbour is exists" << std::endl;
+        //cout << "if left neighbour is exists" << endl;
         return stateSpace[lastField];
     }
 
     // if right neighbour is exists
     if( cursor % SIZE < SIZE - 1 && depthFirst(routeColoring, edges, cursor + 1) == stateSpace[lastField])
     {
-        //std::cout << "if right neighbour is exists" << std::endl;
+        //cout << "if right neighbour is exists" << endl;
         return stateSpace[lastField];
     }
 
     // if top neighbour is exists
     if( cursor % SIZE < SIZE - 1 && depthFirst(routeColoring, edges, cursor - SIZE + 1) == stateSpace[lastField])
     {
-        //std::cout << "if top neighbour is exists" << std::endl;
+        //cout << "if top neighbour is exists" << endl;
         return stateSpace[lastField];
     }
 
     // if buttom neighbour is exists
     if( cursor % SIZE != 0 && depthFirst(routeColoring, edges, cursor + SIZE - 1) == stateSpace[lastField])
     {
-        //std::cout << "if buttom neighbour is exists" << std::endl;
+        //cout << "if buttom neighbour is exists" << endl;
         return stateSpace[lastField];
     }
 
@@ -257,140 +257,159 @@ short int HexStateSpace::heuristicScore() const
 
 short int HexStateSpace::heuristicScore(color player) const
 {
+    HexStateSpace::color oppPlayer = player == HexStateSpace::BLUE ? HexStateSpace::RED : HexStateSpace::BLUE;
     ListGraph g;
-    ListGraph::Node** nodes = new ListGraph::Node*[SIZE*SIZE];
+    //ListGraph::Node** nodes = new ListGraph::Node*[LENGTH];
     ListGraph::EdgeMap<int> length(g);
 
-    for(short int cursor = 0; cursor < this->LENGTH; cursor++)
+    cout << "Creating nodes:" << endl;
+    for(unsigned short int cursor = 0; cursor < LENGTH; cursor++)
     {
-        ListGraph::Node node = g.addNode();
-        nodes[0] = &node;
+        const auto& node = g.addNode();
+        //cout << " " << cursor << "(" << &node << "|" << g.id(node) << ")" << endl;
+        //ListGraph::Node* p_node = &node;
+        //nodes[cursor] = p_node;
     }
 
-    for(short int cursor = 0; cursor < this->LENGTH; cursor++)
+    for(unsigned short int cursor = 0; cursor < LENGTH; cursor++)
     {
-        if(stateSpace[cursor] != player)  continue; // is not owned by the current player
+        //cout << "Detecting neighbour nodes: " << cursor << endl;
+        //ListGraph::Node node1 = g.nodeFromId(cursor);
+        if(stateSpace[cursor] == oppPlayer)  continue; // is not owned by the current player
 
-        ListGraph::Node* node1 = nodes[cursor];
-        std::vector<short int> neighbours;
+        std::vector<unsigned short int> neighbours;
 
-        // up neighbour is always exists if is is in rage
+        // up neighbour
         if(cursor - SIZE >= 0)
         {
-            //std::cout << "up neighbour is always exists if is is in rage" << std::endl;
-            short int neighbour = cursor - SIZE;
+            unsigned short int neighbour = cursor - SIZE;
+            //cout << "  up neighbour: " << neighbour << endl;
             neighbours.push_back(neighbour);
         }
 
-        // down neighbour is always exists if is is in rage
+        // down neighbour
         if(cursor + SIZE < SIZE * SIZE)
         {
-            //std::cout << "down neighbour is always exists if is is in rage" << std::endl;
-            short int neighbour = cursor + SIZE;
+            unsigned short int neighbour = cursor + SIZE;
+            //cout << "  down neighbour: " << neighbour << endl;
             neighbours.push_back(neighbour);
         }
 
-        // if left neighbour is exists
+        // left neighbour
         if( cursor % SIZE > 0)
         {
-            //std::cout << "if left neighbour is exists" << std::endl;
-            short int neighbour = cursor - 1;
+            unsigned short int neighbour = cursor - 1;
+            //cout << "  left neighbour: " << neighbour << endl;
             neighbours.push_back(neighbour);
         }
 
-        // if right neighbour is exists
+        // right neighbour
         if(cursor % SIZE < SIZE - 1)
         {
-            //std::cout << "if right neighbour is exists" << std::endl;
-            short int neighbour = cursor + 1;
+            unsigned short int neighbour = cursor + 1;
+            //cout << "  right neighbour: " << neighbour << endl;
             neighbours.push_back(neighbour);
         }
 
-        // if top neighbour is exists
+        // top neighbour
         if(cursor % SIZE < SIZE - 1 && cursor > SIZE - 1)
         {
-            //std::cout << "if top neighbour is exists" << std::endl;
-            short int neighbour = cursor - SIZE + 1;
+            unsigned short int neighbour = cursor - SIZE + 1;
+            //cout << "  top neighbour: " << neighbour<< endl;
             neighbours.push_back(neighbour);
         }
 
-        // if buttom neighbour is exists
+        // buttom neighbour
         if( cursor % SIZE != 0 && cursor < SIZE * (SIZE-1))
         {
-            //std::cout << "if buttom neighbour is exists" << std::endl;
-            short int neighbour = cursor + SIZE - 1;
+            unsigned short int neighbour = cursor + SIZE - 1;
+            //cout << "  buttom neighbour: " << neighbour << endl;
             neighbours.push_back(neighbour);
         }
 
-        for (std::vector<short int>::iterator it = neighbours.begin() ; it != neighbours.end(); ++it)
+        for (std::vector<unsigned short int>::iterator it = neighbours.begin() ; it != neighbours.end(); ++it)
         {
-            short int neighbour = *it;
-            ListGraph::Node* node2 = nodes[neighbour];
+            unsigned short int neighbour = *it;
+            //cout << "  add edge: (" << cursor << ", " << neighbour << ")" << endl;
+            //cout << "    realted node_1: (" << &node1 << ")" << endl;
+            //cout << "    realted node_2: (" << &node2 << ")" << endl;
             if(stateSpace[neighbour] == player)
             {
-                ListGraph::Edge edge = g.addEdge(*node1, *node2);
+                ListGraph::Edge edge = g.addEdge(g.nodeFromId(cursor), g.nodeFromId(neighbour));
                 length[edge] = 0;
             }
-            else if(stateSpace[neighbour] != EMPTY)
+            else if(stateSpace[neighbour] == EMPTY)
             {
-                ListGraph::Edge edge = g.addEdge(*node1, *node2);
+                ListGraph::Edge edge = g.addEdge(g.nodeFromId(cursor), g.nodeFromId(neighbour));
                 length[edge] = 1;
             }
         }
     }
 
+    //cout << "Creating s and t nodes" << endl;
+
     //TODO add 4 soure and target
-    ListGraph::Node blue_node_s = g.addNode();
-    ListGraph::Node blue_node_t = g.addNode();
-    ListGraph::Node red_node_s = g.addNode();
-    ListGraph::Node red_node_t = g.addNode();
+    ListGraph::Node blue_node_s = g.addNode(); //170
+    ListGraph::Node blue_node_t = g.addNode(); //171
+    ListGraph::Node red_node_s = g.addNode(); //172
+    ListGraph::Node red_node_t = g.addNode(); //173
 
     // blue left
-    for(short int cursor = 0; cursor < LENGTH; cursor += SIZE)
+    //cout << "blue left:";
+    for(unsigned short int cursor = 0; cursor < LENGTH; cursor += SIZE)
     {
-        ListGraph::Edge edge = g.addEdge(blue_node_s, *nodes[cursor]);
+        //cout <<  " " << cursor;
+        ListGraph::Edge edge = g.addEdge(blue_node_s, g.nodeFromId(cursor));
         length[edge] = 0;
     }
+    //cout << endl;
+
     // blue right
-    for(short int cursor = SIZE-1; cursor < LENGTH; cursor += SIZE)
+    //cout << "blue right:";
+    for(unsigned short int cursor = SIZE-1; cursor < LENGTH; cursor += SIZE)
     {
-        ListGraph::Edge edge = g.addEdge(*nodes[cursor], blue_node_t);
+        //cout <<  " " << cursor;
+        ListGraph::Edge edge = g.addEdge(g.nodeFromId(cursor), blue_node_t);
         length[edge] = 0;
     }
+    //cout << endl;
 
     // red top
-    for(short int cursor = 0; cursor < SIZE; cursor++)
+    //cout << "red top:";
+    for(unsigned short int cursor = 0; cursor < SIZE; cursor++)
     {
-        ListGraph::Edge edge = g.addEdge(red_node_s, *nodes[cursor]);
+        //cout <<  " " << cursor;
+        ListGraph::Edge edge = g.addEdge(red_node_s, g.nodeFromId(cursor));
         length[edge] = 0;
     }
+    //cout << endl;
+
     // red bottom
-    for(short int cursor = SIZE * (SIZE-1); cursor < LENGTH; cursor++)
+    cout << "red bottom:";
+    for(unsigned short int cursor = SIZE * (SIZE-1); cursor < LENGTH; cursor++)
     {
-        ListGraph::Edge edge = g.addEdge(*nodes[cursor], red_node_t);
+        //cout <<  " " << cursor;
+        ListGraph::Edge edge = g.addEdge(g.nodeFromId(cursor), red_node_t);
         length[edge] = 0;
     }
+    //cout << endl;
 
-    delete[] nodes;
-
-    ListGraph::Node* s;
-    ListGraph::Node* t;
-    if(player == BLUE) {
-        s = &blue_node_s;
-        t = &blue_node_t;
-    }
-    if(player == RED) {
-        s = &red_node_s;
-        t = &red_node_t;
-    }
+    //delete[] nodes;
 
     NodeMap<int> dist(g);
+    if(player == BLUE)
+    {
+        dijkstra(g, length).distMap(dist).run(blue_node_s, blue_node_t);
+        cout << "heuristicScore>" << player << ": " << dist[blue_node_t] << endl;
+        return dist[blue_node_t];
+    }
+    else //(player == RED)
+    {
+        dijkstra(g, length).distMap(dist).run(red_node_s, red_node_t);
+        cout << "heuristicScore>" << player << ": " << dist[red_node_t] << endl;
+        return dist[red_node_t];
+    }
 
-    dijkstra(g, length).distMap(dist).run(*s, *t);
-
-    std::cout << "heuristicScore>" << player << ": " << dist[*t] << std::endl;
-
-    return dist[*t];
 }
 
 

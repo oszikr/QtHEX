@@ -29,6 +29,7 @@ HexNnetControl::~HexNnetControl()
 
 void HexNnetControl::Start(const HexStateSpace* hex)
 {
+    return; // TEMORARY OFF
     this->hex = hex;
     std::cout << "Python starting..." << std::endl;
 
