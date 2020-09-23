@@ -1,19 +1,23 @@
 #ifndef HEXSTATESPACE_H
 #define HEXSTATESPACE_H
+#define BLUE_S 2001
+#define BLUE_T 2002
+#define RED_S 2003
+#define RED_T 2004
+
 #include <iostream>
 #include <sstream>
-#include <cmath>
-#include <map>
 
-#include <lemon/list_graph.h>
-#include <lemon/maps.h>
-#include <lemon/dijkstra.h>
+#include <utility>                   // for std::pair
+#include <algorithm>                 // for std::for_each
 
-using namespace lemon;
+#include <boost/graph/edge_list.hpp>
+#include <boost/graph/dijkstra_shortest_paths.hpp>
+
+typedef std::pair<int,int> E;
+typedef boost::edge_list<E*> Graph;
+
 using namespace std;
-
-template <typename T> using NodeMap = ListGraph::NodeMap<T>;
-template <typename T> using EdgeMap = ListGraph::EdgeMap<T>;
 
 class HexStateSpace
 {
