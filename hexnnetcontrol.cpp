@@ -49,11 +49,11 @@ std::string HexNnetControl::getState() {
 
 void HexNnetControl::readyReadStandardErrorSlot()
 {
-    state = "WORKING";
+    //state = "WORKING";
     QByteArray qba = readAllStandardError();
     std::string read = qba.toStdString();
     std::cout << "HexNnetControl::pyreadyReadStandardError()" << std::endl;
-    std::cout << "PYTHON> " << read << std::endl;
+    std::cout << "PYTHON>ERR> " << read << std::endl;
 }
 
 void HexNnetControl::readyReadStandardOutputSlot()
@@ -66,7 +66,7 @@ void HexNnetControl::readyReadStandardOutputSlot()
     std::istringstream stream(read);
     std::string line;
     while(std::getline(stream, line)) {
-        std::cout << "PYTHON> " << line << std::endl;
+        std::cout << "PYTHON>OUT> " << line << std::endl;
         if(line.compare("Enter input\r") == 0 || line.compare("Enter input") == 0) // \r for windows
         {
             std::cout << "emit readyForInputSignal()" << std::endl;
@@ -98,11 +98,7 @@ void HexNnetControl::resultSlot(std::string result)
     std::cout << "HexNnetControl::result()" << std::endl;
     std::cout << result << std::endl;
 
-    //nlohmann::json resultObj = nlohmann::json::parse(result);
-    //std::cout << "resultObj.dump()" << std::endl;
-    //std::cout << resultObj.dump() << std::endl;
-
-    std::vector<double> resoultVect;// = fromJson(result);
+    std::vector<double> resoultVect = from_JSON(result);
     unsigned short int r = 0;
     short int maxr = -1;
     short int maxi = -1;
@@ -148,6 +144,7 @@ void HexNnetControl::hintTF(HexStateSpace* curStateSpace, HexStateSpace::color p
     }
 
     std::string statespaces_json = to_JSON(statespaces);
+    std::cout << "HexNnetControl::hintTF>statespaces_json: " << statespaces_json << std::endl;
     write(statespaces_json.c_str());
     write("\n");
 }
@@ -155,7 +152,7 @@ void HexNnetControl::hintTF(HexStateSpace* curStateSpace, HexStateSpace::color p
 std::string HexNnetControl::to_JSON(std::vector<std::vector<HexStateSpace::color>> &statespaces) const
 {
     // sample statespaces:
-    // [[0,0,0,0,0,0,0,1,1,0,1,2,0, ... ,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,1,2,0, ... ,0,0,0,0,0,0,1,2,0,1,0,0,0,0,0,0,0,0,0]]
+    // [[0,0,0,0,0,0,0,1,1,0,1,2,0, ... ,0,0,0,0,0,0,0], ... , [0,0,0,0,0,0,0,0,0,1,2,0, ... ,0,0,0,0,0,0,1,2,0,1,0,0,0,0,0,0,0,0,0]]
     std::stringstream ss;
     ss << "[";
     for (std::vector<std::vector<HexStateSpace::color>>::iterator it = statespaces.begin() ; it != statespaces.end(); ++it)
@@ -165,7 +162,7 @@ std::string HexNnetControl::to_JSON(std::vector<std::vector<HexStateSpace::color
         std::vector<HexStateSpace::color> state = *it;
         for (std::vector<HexStateSpace::color>::iterator it2 = state.begin() ; it2 != state.end(); ++it2)
         {
-            if(it != statespaces.begin()) ss << ",";
+            if(it2 != state.begin()) ss << ",";
             HexStateSpace::color color = *it2;
             ss << color;
         }
