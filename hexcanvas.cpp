@@ -331,13 +331,9 @@ void HexCanvas::hintAB()
 void HexCanvas::hintTF()
 {
     std::cout << "Using NNET" << std::endl;
-    if(nnetctrl->getState().compare("INPUT") == 0)
-    {
+
         nnetctrl->hintTF(stateSpace, player);
-    }
-    else {
-        std::cout << "NNET is not loaded yet." << std::endl;
-    }
+
 }
 
 void HexCanvas::hintHeur()

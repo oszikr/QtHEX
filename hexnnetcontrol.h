@@ -10,7 +10,8 @@
 #include <QProcess>
 #include <QDebug>
 #include "hexstatespace.h"
-//#include "json.hpp"
+
+#define QUICKSTARTPYTHON true
 
 class HexNnetControl : public QProcess
 {
@@ -36,6 +37,8 @@ private:
     QString pyFilePath;
     std::string state;
     const HexStateSpace* hex;
+    std::string to_JSON(std::vector<std::vector<HexStateSpace::color>> &statespaces) const;
+    std::vector<double> from_JSON(std::string result) const;
 };
 
 #endif // HEXNNETCONTROL_H

@@ -29,7 +29,9 @@ HexNnetControl::~HexNnetControl()
 
 void HexNnetControl::Start(const HexStateSpace* hex)
 {
-    return; // TEMORARY OFF
+    if(!QUICKSTARTPYTHON) {
+        return;
+    }
     this->hex = hex;
     std::cout << "Python starting..." << std::endl;
 
@@ -100,7 +102,7 @@ void HexNnetControl::resultSlot(std::string result)
     //std::cout << "resultObj.dump()" << std::endl;
     //std::cout << resultObj.dump() << std::endl;
 
-    std::vector<double> resoultVect;// = resultObj["Result"];
+    std::vector<double> resoultVect;// = fromJson(result);
     unsigned short int r = 0;
     short int maxr = -1;
     short int maxi = -1;
@@ -144,8 +146,51 @@ void HexNnetControl::hintTF(HexStateSpace* curStateSpace, HexStateSpace::color p
             statespaces.push_back(stateSpaceVector);
         }
     }
-    //nlohmann::json input(statespaces);
 
-    //write(input.dump().c_str());
-    //write("\n");
+    std::string statespaces_json = to_JSON(statespaces);
+    write(statespaces_json.c_str());
+    write("\n");
+}
+
+std::string HexNnetControl::to_JSON(std::vector<std::vector<HexStateSpace::color>> &statespaces) const
+{
+    // sample statespaces:
+    // [[0,0,0,0,0,0,0,1,1,0,1,2,0, ... ,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,1,2,0, ... ,0,0,0,0,0,0,1,2,0,1,0,0,0,0,0,0,0,0,0]]
+    std::stringstream ss;
+    ss << "[";
+    for (std::vector<std::vector<HexStateSpace::color>>::iterator it = statespaces.begin() ; it != statespaces.end(); ++it)
+    {
+        if(it != statespaces.begin()) ss << ", ";
+        ss << "[";
+        std::vector<HexStateSpace::color> state = *it;
+        for (std::vector<HexStateSpace::color>::iterator it2 = state.begin() ; it2 != state.end(); ++it2)
+        {
+            if(it != statespaces.begin()) ss << ",";
+            HexStateSpace::color color = *it2;
+            ss << color;
+        }
+        ss << "]";
+    }
+    ss << "]";
+    return ss.str();
+}
+
+std::vector<double> HexNnetControl::from_JSON(std::string result) const
+{
+    // sample result:
+    // {"Result" : [0.0,0.0]}
+    std::size_t pos1 = result.find("[") + 1;
+    std::size_t pos2 = result.find("]");
+    result = result.substr(pos1, pos2 - pos1);
+    std::replace( result.begin(), result.end(), ',', ' ');
+
+    std::vector<double> v;
+    std::string s = result;
+    std::istringstream is( s );
+    double d;
+    while( is >> d )
+    {
+        v.push_back(d);
+    }
+    return v;
 }
