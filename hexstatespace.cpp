@@ -1,7 +1,7 @@
 #include "hexstatespace.h"
 
 #ifndef _HEXTABLESIZE_
-#define _HEXTABLESIZE_ 13
+#define _HEXTABLESIZE_ 5
 #endif
 
 // ctor
@@ -249,13 +249,13 @@ HexStateSpace::color HexStateSpace::depthFirst(color* routeColoring, bool* edges
     return EMPTY;
 }
 
-short int HexStateSpace::heuristicScore() const
+unsigned short int HexStateSpace::heuristicScore() const
 {
     color player = stateSpace[lastField];
     return heuristicScore(player);
 }
 
-short int HexStateSpace::heuristicScore(color player) const
+unsigned short int HexStateSpace::heuristicScore(color player) const
 {
     HexStateSpace::color oppPlayer = player == HexStateSpace::BLUE ? HexStateSpace::RED : HexStateSpace::BLUE;
     std::vector<Edge> edges;
@@ -399,6 +399,10 @@ short int HexStateSpace::heuristicScore(color player) const
     dijkstra_shortest_paths(g, s,
                           predecessor_map(boost::make_iterator_property_map(p.begin(), boost::get(boost::vertex_index, g))).
                           distance_map(boost::make_iterator_property_map(d.begin(), boost::get(boost::vertex_index, g))));
+    if(d[t] == -1)
+    {
+        return 1000; // no path - lost state
+    }
     return d[t];
 }
 

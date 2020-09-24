@@ -11,6 +11,7 @@
 #include "hexagon.hpp"
 #include "hexabcontrol.h"
 #include "hexnnetcontrol.h"
+#include "hexminmaxcontrol.h"
 
 # define M_PI           3.14159265358979323846
 

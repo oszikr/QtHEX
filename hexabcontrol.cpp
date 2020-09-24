@@ -1,12 +1,12 @@
 #include "hexabcontrol.h"
 
-HexStrategyControl::HexStrategyControl(const HexStateSpace& hex, const HexStateSpace::color &A, const HexStateSpace::color &B)
+HexABcontrol::HexABcontrol(const HexStateSpace& hex, const HexStateSpace::color &A, const HexStateSpace::color &B)
     :hex(hex), A(A), B(B)
 {}
 
 // Start game tree generator for all EMPTY fields. If a winning strategy found, return with the field index.
 // if the return value of the recursions equals with the current player, this a winning way
-short int HexStrategyControl::getWinningStep() const
+short int HexABcontrol::getWinningStep() const
 {
     std::cout << ">>> Searching winning strategy for all empty field: " << std::endl;
     // level := 0 -- A player's level
@@ -28,7 +28,7 @@ short int HexStrategyControl::getWinningStep() const
 }
 
 // DFS in the game tree. Alpha/beta cutting is applyed
-HexStateSpace::color HexStrategyControl::alphaBetaRecursion(HexStateSpace& curHex, const unsigned int &level) const
+HexStateSpace::color HexABcontrol::alphaBetaRecursion(HexStateSpace& curHex, const unsigned int &level) const
 {
     // In the winner state
     HexStateSpace::color winner = curHex.isWinner();

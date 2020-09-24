@@ -23,11 +23,14 @@ void HexCanvas::setStateSpace(HexStateSpace* stateSpace)
 
     this->hexagons.clear();
 
-    //if(stateSpace->getSize() < 9) PADDING += (9-stateSpace->getSize())*HEXAGONSIZE;
-
     setFixedSize(QSize(
                 HEXAGONWIDTH * stateSpace->getSize() + (HEXAGONWIDTH * (stateSpace->getSize()-1) / 2) + 2*PADDING,
                 HEXAGONHEIGHT * stateSpace->getSize() - (HEXAGONHEIGHT * 1 / 4) * (stateSpace->getSize() - 2)  + 2*PADDING));
+
+    if(stateSpace->getSize() < 9)
+    {
+        this->setFixedSize(QSize(this->width(), this->height()+200));
+    }
 
     for(unsigned short int i = 0; i < stateSpace->getSize(); i++)
     {
@@ -309,7 +312,8 @@ void HexCanvas::setMouseTrackingEnabled()
 
 void HexCanvas::hintAB()
 {  
-    HexStrategyControl ctrl(*stateSpace, player, (player == HexStateSpace::BLUE ? HexStateSpace::RED : HexStateSpace::BLUE) );
+    std::cout << "Using Game tree" << std::endl;
+    HexABcontrol ctrl(*stateSpace, player, (player == HexStateSpace::BLUE ? HexStateSpace::RED : HexStateSpace::BLUE) );
 
     double startTime = getWallTime();
     short int hint = ctrl.getWinningStep();
@@ -342,16 +346,34 @@ void HexCanvas::hintTF()
 
 void HexCanvas::hintHeur()
 {
-    std::cout << "Using Heuristic" << std::endl;
+    std::cout << "Using Heuristic. Current state info:" << std::endl;
     HexStateSpace::color oppPlayer = player == HexStateSpace::BLUE ? HexStateSpace::RED : HexStateSpace::BLUE;
     short int h_player = stateSpace->heuristicScore(player);
     short int h_oppalyer = stateSpace->heuristicScore(oppPlayer);
+    std::cout << (player == HexStateSpace::BLUE ? "\e[0;34mBlue" : "\e[0;31mRed") << "\e[m" << " palyer's score is: " << h_player << std::endl;
+    std::cout << (player != HexStateSpace::BLUE ? "\e[0;34mBlue" : "\e[0;31mRed") << "\e[m" << " palyer's score is: " << h_oppalyer << std::endl;
+    std::cout << "-- state info end --" << std::endl;
 
-    std::cout << (player == HexStateSpace::BLUE ? "\e[0;34mBlue" : "\e[0;31mRed") << "\e[m." << " palyer's score is: " << h_player << std::endl;
-    std::cout << "Other palyer's score is: " << h_oppalyer << std::endl;
+    HexMinMaxControl ctrl(*stateSpace, player, 4);
 
-    short int score = h_player - h_oppalyer;
-    std::cout << "Final score: " << score << std::endl;
+    double startTime = getWallTime();
+    short int hint = ctrl.getWinningStep();
+    double meansurement = getWallTime() - startTime;
+    std::cout << "Elapse time: " << meansurement << std::endl;
+
+    if(hint >= 0)
+    {
+        std::cout << "The best field's array index is: " << hint << std::endl;
+        std::cout << "The best field's matrix index is: [" <<
+                     hint/stateSpace->getSize()+1 << ". row, " << hint%stateSpace->getSize()+1 << ". col]" << std::endl;
+
+    }
+    else
+    {
+        std::cout << "You can not win: " << hint << std::endl;
+    }
+
+
 }
 
 void HexCanvas::nextInfo()

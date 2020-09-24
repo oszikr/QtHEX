@@ -5,14 +5,13 @@
 class HexMinMaxControl
 {
 public:
-    HexMinMaxControl(const HexStateSpace& hex, const HexStateSpace::color& A, const HexStateSpace::color& B, unsigned short limit);
+    HexMinMaxControl(const HexStateSpace& hex, const HexStateSpace::color& player, const unsigned short limit);
     short int getWinningStep() const;
-    HexStateSpace::color alphaBetaRecursion(HexStateSpace &curHex, const unsigned int& level) const;
+    short int minMaxRecursion(const HexStateSpace &curHex, const HexStateSpace::color& curPlayer, const unsigned int& curLevel) const;
 
 private:
     const HexStateSpace hex;
-    const HexStateSpace::color A; // the player who search the winning strategy
-    const HexStateSpace::color B; // the other player
+    const HexStateSpace::color player; // the player who search the winning strategy
     const unsigned short int limit;
 };
 

@@ -46,8 +46,8 @@ public:
     void clear(); // fill the statespacee with EMPTY
     void undo(); // set lastField to EMPTY
     color isWinner() const; // if the last field change make a winning state then return the winner plyer's color
-    short int heuristicScore() const;
-    short int heuristicScore(color player) const;
+    unsigned short int heuristicScore() const; // remaining steps to win for current player
+    unsigned short int heuristicScore(color player) const; // remaining steps to win for parametered player
 
 private:
     unsigned short int SIZE; // table height/width

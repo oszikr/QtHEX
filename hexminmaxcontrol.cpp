@@ -1,71 +1,108 @@
 #include "hexminmaxcontrol.h"
 
-HexMinMaxControl::HexMinMaxControl(const HexStateSpace& hex, const HexStateSpace::color &A, const HexStateSpace::color &B, unsigned short int limit)
-    :hex(hex), A(A), B(B), limit(limit)
+HexMinMaxControl::HexMinMaxControl(const HexStateSpace& hex, const HexStateSpace::color &player, const unsigned short int limit)
+    :hex(hex), player(player), limit(limit)
 {}
 
 // Start game tree generator for all EMPTY fields. If a winning strategy found, return with the field index.
 // Ff the return value of the recursions equals with the current player, this a winning way
 short int HexMinMaxControl::getWinningStep() const
 {
+    std::cout << (player == HexStateSpace::BLUE ? "\e[0;34mBlue" : "\e[0;31mRed") << "\e[m" << " palyer's h score is: " << hex.heuristicScore() << std::endl;
     std::cout << ">>> Searching winning strategy for all empty field: " << std::endl;
-    // level := 0 -- A player's level
+
+    HexStateSpace::color curPlayer = player;
+    unsigned int curLevel = 0; // A player's level
+
+    unsigned int nextLevel = curLevel + 1;
+    HexStateSpace::color nextPlayer = curPlayer == HexStateSpace::BLUE ? HexStateSpace::RED : HexStateSpace::BLUE;
+
+    short int min = 1000; // lost score
+    short int min_i = -1;
     for (unsigned short int i = 0; i < hex.getLength(); i++)
     {
-        std::cout << i+1 << "/" << hex.getLength() << std::endl;
+        std::cout << i+1 << "/" << hex.getLength();
         if (hex.get(i) == HexStateSpace::EMPTY) { // Empty Field
             HexStateSpace nextHex(hex); // Copy the state of the table
-            nextHex.set(i, A); // Mark the field for the current player
-            HexStateSpace::color winner = alphaBetaRecursion(nextHex, 1);
-            if (winner == A)
+            nextHex.set(i, nextPlayer); // Mark the field for the current player
+            short int score = minMaxRecursion(nextHex, nextPlayer, nextLevel);
+            //short int score = hex.heuristicScore();
+            std::cout << ": " << score << std::endl;
+            if(min < score) {
+                min = score;
+                min_i = i;
+            }
+            if(score == 0) // max score - winning state
             {
-                return i;
+                return min_i;
             }
         }
+        std::cout << std::endl;
     }
-    std::cout << std::endl;
-    return -1;
+    return min_i;
 }
 
 // DFS in the game tree. Alpha/beta cutting is applyed
-HexStateSpace::color HexMinMaxControl::alphaBetaRecursion(HexStateSpace& curHex, const unsigned int &level) const
+short int HexMinMaxControl::minMaxRecursion(const HexStateSpace& curHex, const HexStateSpace::color &curPlayer, const unsigned int &curLevel) const
 {
-    // In the winner state
-    HexStateSpace::color winner = curHex.isWinner();
-    if (winner != HexStateSpace::EMPTY) return winner;
+    unsigned int nextLevel = curLevel + 1;
+    HexStateSpace::color nextPlayer = curPlayer == HexStateSpace::BLUE ? HexStateSpace::RED : HexStateSpace::BLUE;
 
-    // recursion
-    if (level % 2 != 0) { // B player's level
-        for (unsigned short int i = 0; i < curHex.getLength(); i++)
+    // CURPLAYER
+    if(curPlayer == player) {
+        short int curScore = curHex.heuristicScore();
+        if(curScore == 0 || curLevel == limit)
         {
-            if (curHex.get(i) == HexStateSpace::EMPTY)
-            {
-                HexStateSpace nextHex(curHex);
-                nextHex.set(i, B);
-                HexStateSpace::color winner = alphaBetaRecursion(nextHex, level + 1);
-                if (winner == B)
+            return curScore;
+        }
+
+        short int min = 1000;
+        for (unsigned short int i = 0; i < hex.getLength(); i++)
+        {
+
+            if (hex.get(i) == HexStateSpace::EMPTY) { // Empty Field
+                HexStateSpace nextHex(hex); // Copy the state of the table
+                nextHex.set(i, nextPlayer); // Mark the field for the current player
+                short int score = minMaxRecursion(nextHex, nextPlayer, nextLevel);
+
+                if(min > score) {
+                    min = score;
+                }
+                if(score == 0)
                 {
-                    return B; // if there is at least one field which B can win => return B
+                    return score;
                 }
             }
         }
-        return A;
+        return min;
     }
-    else // A player's level
-    {
-        for (unsigned short int i = 0; i < curHex.getLength(); i++)
+    //OPPPLAYER
+    else {
+        short int curScore = curHex.heuristicScore();
+        if(curScore == 0 || curLevel == limit)
         {
-            if (curHex.get(i) == HexStateSpace::EMPTY)
-            {
-                HexStateSpace nextHex(curHex);
-                nextHex.set(i, A);
-                HexStateSpace::color winner = alphaBetaRecursion(nextHex, level + 1);
-                if (winner == A)
+            return -curScore;
+        }
+
+        short int max = 0;
+        for (unsigned short int i = 0; i < hex.getLength(); i++)
+        {
+
+            if (hex.get(i) == HexStateSpace::EMPTY) { // Empty Field
+                HexStateSpace nextHex(hex); // Copy the state of the table
+                nextHex.set(i, nextPlayer); // Mark the field for the current player
+                short int score = minMaxRecursion(nextHex, nextPlayer, nextLevel);
+
+                if(max < score) {
+                    max = score;
+                }
+                if(score == 0)
                 {
-                    return A; // if there is at least one field which A can win => return A
+                    return 1000;
                 }
             }
         }
-        return B;
+        return max;
     }
+
 }

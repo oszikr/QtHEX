@@ -11,7 +11,7 @@
 #include <QDebug>
 #include "hexstatespace.h"
 
-#define QUICKSTARTPYTHON true
+#define QUICKSTARTPYTHON false
 
 class HexNnetControl : public QProcess
 {
