@@ -96,11 +96,11 @@ void HexNnetControl::resultSlot(std::string result)
     std::cout << "HexNnetControl::result()" << std::endl;
     std::cout << result << std::endl;
 
-    nlohmann::json resultObj = nlohmann::json::parse(result);
+    //nlohmann::json resultObj = nlohmann::json::parse(result);
     //std::cout << "resultObj.dump()" << std::endl;
     //std::cout << resultObj.dump() << std::endl;
 
-    std::vector<double> resoultVect = resultObj["Result"];
+    std::vector<double> resoultVect;// = resultObj["Result"];
     unsigned short int r = 0;
     short int maxr = -1;
     short int maxi = -1;
@@ -144,8 +144,8 @@ void HexNnetControl::hintTF(HexStateSpace* curStateSpace, HexStateSpace::color p
             statespaces.push_back(stateSpaceVector);
         }
     }
-    nlohmann::json input(statespaces);
+    //nlohmann::json input(statespaces);
 
-    write(input.dump().c_str());
-    write("\n");
+    //write(input.dump().c_str());
+    //write("\n");
 }

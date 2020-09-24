@@ -10,7 +10,7 @@
 #include <QProcess>
 #include <QDebug>
 #include "hexstatespace.h"
-#include "json.hpp"
+//#include "json.hpp"
 
 class HexNnetControl : public QProcess
 {

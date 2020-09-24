@@ -47,7 +47,7 @@ HexStateSpace::~HexStateSpace()
 
 std::ostream& operator<<(std::ostream& os, const HexStateSpace& obj)
 {
-    os << "Hex State Space at " << &obj << endl;
+    os << "Hex State Space at " << &obj << std::endl;
     for (unsigned short int i = 0; i < obj.SIZE; i++)
     {
         for (unsigned short int j = 0; j < obj.SIZE; j++)
@@ -59,7 +59,7 @@ std::ostream& operator<<(std::ostream& os, const HexStateSpace& obj)
             else
                 os << " \e[0;37m" << obj.get(i, j) << "\e[m";
         }
-        os << endl;
+        os << std::endl;
     }
     return os;
 }
@@ -258,14 +258,13 @@ short int HexStateSpace::heuristicScore() const
 short int HexStateSpace::heuristicScore(color player) const
 {
     HexStateSpace::color oppPlayer = player == HexStateSpace::BLUE ? HexStateSpace::RED : HexStateSpace::BLUE;
-    std::vector<E> edges;
-    std::vector<unsigned short int> weight;
+    std::vector<Edge> edges;
+    std::vector<int> weight;
 
     // computing edges and weight
     for(unsigned short int cursor = 0; cursor < LENGTH; cursor++)
     {
         if(stateSpace[cursor] == oppPlayer)  continue; // is not owned by the current player
-
         std::vector<unsigned short int> neighbours;
 
         // up neighbour
@@ -316,14 +315,14 @@ short int HexStateSpace::heuristicScore(color player) const
             if(stateSpace[neighbour] == player)
             {
                 // add edge to cursor-neighbour
-                edges.push_back(std::pair<int, int>(cursor, neighbour));
+                edges.push_back(Edge(cursor, neighbour));
                 // weight 0
                 weight.push_back(0);
             }
             else if(stateSpace[neighbour] == EMPTY)
             {
                 // add edge to cursor-neighbour
-                edges.push_back(std::pair<int, int>(cursor, neighbour));
+                edges.push_back(Edge(cursor, neighbour));
                 // weight 1
                 weight.push_back(1);
             }
@@ -336,16 +335,19 @@ short int HexStateSpace::heuristicScore(color player) const
     for(unsigned short int cursor = 0; cursor < LENGTH; cursor += SIZE)
     {
         // add edge to blue_s-cursor
-        edges.push_back(std::pair<int, int>(BLUE_S, cursor));
-        // weight 0
-        weight.push_back(0);
+        edges.push_back(Edge(BLUE_S, cursor));
+        if(stateSpace[cursor] == player)
+            weight.push_back(0);
+        else
+            weight.push_back(1);
     }
 
     // blue right
     for(unsigned short int cursor = SIZE-1; cursor < LENGTH; cursor += SIZE)
     {
         // add edge to cursor-blue_t
-        edges.push_back(std::pair<int, int>(cursor, BLUE_T));
+        edges.push_back(Edge(cursor, BLUE_T));
+
         // weight 0
         weight.push_back(0);
     }
@@ -354,32 +356,50 @@ short int HexStateSpace::heuristicScore(color player) const
     for(unsigned short int cursor = 0; cursor < SIZE; cursor++)
     {
         // add edge to red_s-cursor
-        edges.push_back(std::pair<int, int>(RED_S, cursor));
-        // weight 0
-        weight.push_back(0);
+        edges.push_back(Edge(RED_S, cursor));
+        if(stateSpace[cursor] == player)
+            weight.push_back(0);
+        else
+            weight.push_back(1);
     }
 
     // red bottom
     for(unsigned short int cursor = SIZE * (SIZE-1); cursor < LENGTH; cursor++)
     {
         // add edge to cursor-red_t
-        edges.push_back(std::pair<int, int>(cursor, RED_T));
+        edges.push_back(Edge(cursor, RED_T));
         // weight 0
         weight.push_back(0);
     }
 
-    int score = 0;
+    const unsigned short int num_nodes = LENGTH + 4;
+    Edge* edge_array = edges.data();
+    const unsigned short int num_arcs = edges.size();
+    int* weight_array = weight.data();
+
+    graph_t g(edge_array, edge_array + num_arcs, weight_array, num_nodes);
+    //property_map<graph_t, edge_weight_t>::type weightmap = boost::get(edge_weight, g);
+    std::vector<vertex_descriptor> p(num_vertices(g));
+    std::vector<int> d(num_vertices(g));
+
+    vertex_descriptor s;
+    vertex_descriptor t;
+
     if(player == BLUE)
     {
-        cout << "heuristicScore>" << player << ": " << score << endl;
-        return score;
+        s = vertex(BLUE_S, g);
+        t = vertex(BLUE_T, g);
     }
-    else //(player == RED)
+    else //if(player == RED)
     {
-        cout << "heuristicScore>" << player << ": " << score<< endl;
-        return score;
+        s = vertex(RED_S, g);
+        t = vertex(RED_T, g);
     }
 
+    dijkstra_shortest_paths(g, s,
+                          predecessor_map(boost::make_iterator_property_map(p.begin(), boost::get(boost::vertex_index, g))).
+                          distance_map(boost::make_iterator_property_map(d.begin(), boost::get(boost::vertex_index, g))));
+    return d[t];
 }
 
 

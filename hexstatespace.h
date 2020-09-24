@@ -1,23 +1,25 @@
 #ifndef HEXSTATESPACE_H
 #define HEXSTATESPACE_H
-#define BLUE_S 2001
-#define BLUE_T 2002
-#define RED_S 2003
-#define RED_T 2004
+#define BLUE_S 170
+#define BLUE_T 171
+#define RED_S 172
+#define RED_T 173
 
+#include <boost/config.hpp>
 #include <iostream>
-#include <sstream>
+#include <fstream>
 
-#include <utility>                   // for std::pair
-#include <algorithm>                 // for std::for_each
-
-#include <boost/graph/edge_list.hpp>
+#include <boost/graph/graph_traits.hpp>
+#include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
+#include <boost/property_map/property_map.hpp>
 
-typedef std::pair<int,int> E;
-typedef boost::edge_list<E*> Graph;
+using namespace boost;
 
-using namespace std;
+typedef adjacency_list < listS, vecS, directedS,
+  no_property, property < edge_weight_t, int > > graph_t;
+typedef graph_traits < graph_t >::vertex_descriptor vertex_descriptor;
+typedef std::pair<int, int> Edge;
 
 class HexStateSpace
 {

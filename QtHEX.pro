@@ -18,7 +18,6 @@ SOURCES += main.cpp\
     hexnnetcontrol.cpp \
         mainwindow.cpp \
     hexstatespace.cpp \
-    test.cpp \
     hexcanvas.cpp
 
 HEADERS  += mainwindow.h \
@@ -27,7 +26,6 @@ HEADERS  += mainwindow.h \
     hexnnetcontrol.h \
     hexstatespace.h \
     hexcanvas.h \
-    hexagon.hpp \
-    json.hpp
+    hexagon.hpp
 
 FORMS    += mainwindow.ui
