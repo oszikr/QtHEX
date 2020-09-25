@@ -346,29 +346,119 @@ void HexCanvas::hintTF()
 
 void HexCanvas::hintHeur()
 {
+    std::vector<double> nHints;
+    std::cout << "Using NNET" << std::endl;
+    if(nnetctrl->getState().compare("INPUT") == 0)
+    {
+        nnetctrl->hintTF(stateSpace, player);
+    }
+    else {
+        std::cout << "NNET is not loaded yet. (nnetctrl in stage "<< nnetctrl->getState() << ")" << std::endl;
+    }
+
     std::cout << "Using Heuristic. Current state info:" << std::endl;
-
     HexMinMaxControl ctrl(*stateSpace, player, (player == HexStateSpace::BLUE ? HexStateSpace::RED : HexStateSpace::BLUE), 2);
-
     double startTime = getWallTime();
-    short int hint = ctrl.getWinningStep();
+    std::vector<short int> hHints = ctrl.getWinningStep();
     double meansurement = getWallTime() - startTime;
     std::cout << "Elapse time: " << meansurement << std::endl;
 
-    if(hint >= 0)
-    {
-        std::cout << "The best field's array index is: " << hint << std::endl;
-        std::cout << "The best field's matrix index is: [" <<
-                     hint/stateSpace->getSize()+1 << ". row, " << hint%stateSpace->getSize()+1 << ". col]" << std::endl;
+    nHints = nnetctrl->resoultVect;
+    std::cout << "hHints.size(): " << hHints.size() << std::endl;
+    std::cout << "nHints.size(): " << nHints.size() << std::endl;
+    std::vector<double> cHints;
 
+    if(nHints.size() != 0)
+    {
+        for(size_t i = 0; i < hHints.size(); i++)
+        {
+            double n = nHints[i];
+            double h = hHints[i];
+            double c;
+            if(h == -1000) {
+                c = 1000;
+            }
+            else if(h == -1000) {
+                c = 0;
+            }
+            else {
+                c = (100 / (100-h)) * n;
+            }
+            cHints.push_back(c);
+        }
     }
     else
     {
-        std::cout << "You can not win: " << hint << std::endl;
+        for(size_t i = 0; i < hHints.size(); i++)
+        {
+            double h = hHints[i];
+            double c;
+            if(h == -1000) {
+                c = 1000;
+            }
+            else if(h == -1000) {
+                c = 0;
+            }
+            else {
+                c = (100 / (100-h));
+            }
+            cHints.push_back(c);
+        }
     }
 
+    std::cout << "\e[0;32m" << "cHints: " << toString(cHints) << "\e[m" << std::endl;
 
+    unsigned short int r = 0;
+    short int maxr = -1;
+    short int maxi = -1;
+    for (unsigned short int i = 0; i < stateSpace->getLength(); i++)
+    {
+        if (stateSpace->get(i) == HexStateSpace::EMPTY)
+        { // Empty Field
+            if(maxr == -1) {
+                maxr = r;
+                maxi = i;
+            }
+            else if(cHints[maxr] < cHints[r])
+            {
+                maxr = r;
+                maxi = i;
+            }
+            r++;
+        }
+    }
+    std::cout << "\e[0;32m";
+    std::cout << "resoultVect.size(): " << cHints.size() << std::endl;
+    std::cout << "The Predicted field's array index is: " << maxi << std::endl;
+    std::cout << "The Predicted field's matrix index is: [" <<
+                 maxi/stateSpace->getSize()+1 << ". row, " << maxi%stateSpace->getSize()+1 << ". col]" << std::endl;
+    std::cout << "The Predicted field's p = " << cHints[maxr] << std::endl;
+    std::cout << "\e[m" << std::endl;
 }
+
+std::string HexCanvas::toString(std::vector<short int> &v) const
+{
+    std::stringstream ss;
+    for(size_t i = 0; i < v.size(); i++) {
+        ss << v[i] << " ";
+    }
+    return ss.str();
+}
+
+std::string HexCanvas::toString(std::vector<double> &v) const
+{
+    std::stringstream ss;
+    for(size_t i = 0; i < v.size(); i++) {
+        ss << v[i] << " ";
+    }
+    return ss.str();
+}
+
+
+/*double HexCanvas::getLimit(std::vector<double> v, int l) const
+{
+
+}*/
 
 void HexCanvas::nextInfo()
 {

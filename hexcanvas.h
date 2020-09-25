@@ -7,6 +7,7 @@
 #include <QPainter>
 #include <QPaintEvent>
 #include <QTimer>
+#include <algorithm>
 #include "hexstatespace.h"
 #include "hexagon.hpp"
 #include "hexabcontrol.h"
@@ -71,6 +72,9 @@ public slots:
 
 private:
     double getWallTime() const; // for measure the elapsed time
+    //double getLimit(std::vector<double> v, int l) const;
+    std::string toString(std::vector<double> &v) const;
+    std::string toString(std::vector<short int> &v) const;
 };
 
 #endif // HEXCANVAS_H

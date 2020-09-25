@@ -15,13 +15,14 @@ std::string HexMinMaxControl::toString(std::vector<short int> &v) const
 
 // Start game tree generator for all EMPTY fields. If a winning strategy found, return with the field index.
 // if the return value of the recursions equals with the current player, this a winning way
-short int HexMinMaxControl::getWinningStep() const
+std::vector<short int> HexMinMaxControl::getWinningStep(/*std::set<unsigned short int> fields*/) const
 {
     std::cout << ">>> Searching winning strategy for all empty field: " << std::endl;
     // level := 0 -- A player's level
     int min_i = -1;
     int min = 1000;
     std::vector<short int> path;
+    std::vector<short int> result;
     for (unsigned short int i = 0; i < hex.getLength(); i++)
     {
         if (hex.get(i) == HexStateSpace::EMPTY) { // Empty Field
@@ -36,14 +37,10 @@ short int HexMinMaxControl::getWinningStep() const
                 min = h_score;
                 min_i = i;
             }
-            if (h_score == -1000)
-            {
-                return i;
-            }
+            result.push_back(h_score);
         }
     }
-
-    return min_i;
+    return result;
 }
 
 short int HexMinMaxControl::minMaxRecursion(HexStateSpace& curHex, const unsigned int &level, std::vector<short int> &path) const
@@ -66,7 +63,7 @@ short int HexMinMaxControl::minMaxRecursion(HexStateSpace& curHex, const unsigne
     {
         return curPlayer_h_score;
     }
-    if(level == 3)
+    if(level == 2)
     {
         short int nextPlayer_h_score = curHex.heuristicScore(nextPlayer);
         short int h_score = curPlayer_h_score - nextPlayer_h_score;

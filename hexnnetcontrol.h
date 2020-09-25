@@ -11,7 +11,7 @@
 #include <QDebug>
 #include "hexstatespace.h"
 
-#define QUICKSTARTPYTHON false
+#define QUICKSTARTPYTHON true
 
 class HexNnetControl : public QProcess
 {
@@ -22,6 +22,7 @@ public:
     void Start(const HexStateSpace* hex);
     std::string getState();
     void hintTF(HexStateSpace* curStateSpace, HexStateSpace::color player);
+    std::vector<double> resoultVect;
 public slots:
     void readyReadStandardErrorSlot();
     void readyReadStandardOutputSlot();

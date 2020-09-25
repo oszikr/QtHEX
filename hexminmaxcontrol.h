@@ -3,12 +3,13 @@
 #include "hexstatespace.h"
 #include <iostream>
 #include <sstream>
+#include <set>
 
 class HexMinMaxControl
 {
 public:
     HexMinMaxControl(const HexStateSpace& hex, const HexStateSpace::color& A, const HexStateSpace::color& B, const unsigned short limit);
-    short int getWinningStep() const;
+    std::vector<short int> getWinningStep() const;
     short int minMaxRecursion(HexStateSpace &curHex, const unsigned int& level, std::vector<short> &path) const;
 
 private:

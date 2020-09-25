@@ -95,10 +95,10 @@ void HexNnetControl::inputSlot()
 void HexNnetControl::resultSlot(std::string result)
 {
     state = "WORKING";
-    std::cout << "HexNnetControl::result()" << std::endl;
-    std::cout << result << std::endl;
+    //std::cout << "HexNnetControl::result()" << std::endl;
+    //std::cout << result << std::endl;
 
-    std::vector<double> resoultVect = from_JSON(result);
+    resoultVect = from_JSON(result);
     unsigned short int r = 0;
     short int maxr = -1;
     short int maxi = -1;
@@ -118,6 +118,7 @@ void HexNnetControl::resultSlot(std::string result)
             r++;
         }
     }
+    std::cout << "resoultVect.size(): " << resoultVect.size() << std::endl;
     std::cout << "The Predicted field's array index is: " << maxi << std::endl;
     std::cout << "The Predicted field's matrix index is: [" <<
                  maxi/hex->getSize()+1 << ". row, " << maxi%hex->getSize()+1 << ". col]" << std::endl;
@@ -144,7 +145,7 @@ void HexNnetControl::hintTF(HexStateSpace* curStateSpace, HexStateSpace::color p
     }
 
     std::string statespaces_json = to_JSON(statespaces);
-    std::cout << "HexNnetControl::hintTF>statespaces_json: " << statespaces_json << std::endl;
+    //std::cout << "HexNnetControl::hintTF>statespaces_json: " << statespaces_json << std::endl;
     write(statespaces_json.c_str());
     write("\n");
 }
