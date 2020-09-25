@@ -1,108 +1,177 @@
 #include "hexminmaxcontrol.h"
 
-HexMinMaxControl::HexMinMaxControl(const HexStateSpace& hex, const HexStateSpace::color &player, const unsigned short int limit)
-    :hex(hex), player(player), limit(limit)
+HexMinMaxControl::HexMinMaxControl(const HexStateSpace& hex, const HexStateSpace::color& A, const HexStateSpace::color& B, const unsigned short limit)
+    :hex(hex), A(A), B(B), limit(limit)
 {}
 
+std::string HexMinMaxControl::toString(std::vector<short int> &v) const
+{
+    std::stringstream ss;
+    for(size_t i = 0; i < v.size(); i++) {
+        ss << v[i] << " ";
+    }
+    return ss.str();
+}
+
 // Start game tree generator for all EMPTY fields. If a winning strategy found, return with the field index.
-// Ff the return value of the recursions equals with the current player, this a winning way
+// if the return value of the recursions equals with the current player, this a winning way
 short int HexMinMaxControl::getWinningStep() const
 {
-    std::cout << (player == HexStateSpace::BLUE ? "\e[0;34mBlue" : "\e[0;31mRed") << "\e[m" << " palyer's h score is: " << hex.heuristicScore() << std::endl;
     std::cout << ">>> Searching winning strategy for all empty field: " << std::endl;
-
-    HexStateSpace::color curPlayer = player;
-    unsigned int curLevel = 0; // A player's level
-
-    unsigned int nextLevel = curLevel + 1;
-    HexStateSpace::color nextPlayer = curPlayer == HexStateSpace::BLUE ? HexStateSpace::RED : HexStateSpace::BLUE;
-
-    short int min = 1000; // lost score
-    short int min_i = -1;
+    // level := 0 -- A player's level
+    int min_i = -1;
+    int min = 1000;
+    std::vector<short int> path;
     for (unsigned short int i = 0; i < hex.getLength(); i++)
     {
-        std::cout << i+1 << "/" << hex.getLength();
         if (hex.get(i) == HexStateSpace::EMPTY) { // Empty Field
             HexStateSpace nextHex(hex); // Copy the state of the table
-            nextHex.set(i, nextPlayer); // Mark the field for the current player
-            short int score = minMaxRecursion(nextHex, nextPlayer, nextLevel);
-            //short int score = hex.heuristicScore();
-            std::cout << ": " << score << std::endl;
-            if(min < score) {
-                min = score;
+            nextHex.set(i, A); // Mark the field for the current player !!!!KÉK!!!!
+            path.push_back(i);
+            short int h_score = minMaxRecursion(nextHex, 1, path);
+            std::cout << toString(path) << ": " << h_score << std::endl;
+            path.pop_back();
+            if(h_score < min)
+            {
+                min = h_score;
                 min_i = i;
             }
-            if(score == 0) // max score - winning state
+            if (h_score == -1000)
             {
-                return min_i;
+                return i;
             }
         }
-        std::cout << std::endl;
     }
+
     return min_i;
 }
 
-// DFS in the game tree. Alpha/beta cutting is applyed
-short int HexMinMaxControl::minMaxRecursion(const HexStateSpace& curHex, const HexStateSpace::color &curPlayer, const unsigned int &curLevel) const
+short int HexMinMaxControl::minMaxRecursion(HexStateSpace& curHex, const unsigned int &level, std::vector<short int> &path) const
 {
-    unsigned int nextLevel = curLevel + 1;
-    HexStateSpace::color nextPlayer = curPlayer == HexStateSpace::BLUE ? HexStateSpace::RED : HexStateSpace::BLUE;
+    HexStateSpace:: color curPlayer;
+    HexStateSpace:: color nextPlayer;
+    if(level % 2 == 1) // kék játékos szintje. a kéknek lépett az imént. a piros következik
+    {
+        curPlayer = HexStateSpace::BLUE;
+        nextPlayer = HexStateSpace::RED;
+    }
+    else // piros játékos szintje. a piros lépett az imént. értékeljük ki. a kék következik
+    {
+        curPlayer = HexStateSpace::RED;
+        nextPlayer = HexStateSpace::BLUE;
+    }
 
-    // CURPLAYER
-    if(curPlayer == player) {
-        short int curScore = curHex.heuristicScore();
-        if(curScore == 0 || curLevel == limit)
+    short int curPlayer_h_score = curHex.heuristicScore(curPlayer);
+    if(curPlayer_h_score == -1000)
+    {
+        return curPlayer_h_score;
+    }
+    if(level == 3)
+    {
+        short int nextPlayer_h_score = curHex.heuristicScore(nextPlayer);
+        short int h_score = curPlayer_h_score - nextPlayer_h_score;
+        return h_score;
+    }
+
+    if(level % 2 == 1) // kék játékos szintje. a kéknek lépett az imént. a piros következik
+    {
+        //HexStateSpace:: color curPlayer = HexStateSpace::BLUE;
+        HexStateSpace:: color nextPlayer = HexStateSpace::RED;
+        short int m = 1000; // min
+        for (unsigned short int i = 0; i < curHex.getLength(); i++)
         {
-            return curScore;
-        }
-
-        short int min = 1000;
-        for (unsigned short int i = 0; i < hex.getLength(); i++)
-        {
-
-            if (hex.get(i) == HexStateSpace::EMPTY) { // Empty Field
-                HexStateSpace nextHex(hex); // Copy the state of the table
-                nextHex.set(i, nextPlayer); // Mark the field for the current player
-                short int score = minMaxRecursion(nextHex, nextPlayer, nextLevel);
-
-                if(min > score) {
-                    min = score;
-                }
-                if(score == 0)
-                {
-                    return score;
+            if (curHex.get(i) == HexStateSpace::EMPTY)
+            {
+                HexStateSpace nextHex(curHex);
+                nextHex.set(i, nextPlayer);
+                path.push_back(i);
+                short int h_score = minMaxRecursion(nextHex, level + 1, path);
+                //std::cout << toString(path) << ": " << h_score << std::endl;
+                path.pop_back();
+                if(m > h_score) {
+                    m = h_score;
                 }
             }
         }
-        return min;
+        return -m;
     }
-    //OPPPLAYER
-    else {
-        short int curScore = curHex.heuristicScore();
-        if(curScore == 0 || curLevel == limit)
+    else //if(level % 2 == 0) // piros játékos szintje. a piros lépett az imént. értékeljük ki. a kék következik
+    {
+        //HexStateSpace:: color curPlayer = HexStateSpace::RED;
+        HexStateSpace:: color nextPlayer = HexStateSpace::BLUE;
+        short int m = 0; // max
+        for (unsigned short int i = 0; i < curHex.getLength(); i++)
         {
-            return -curScore;
-        }
-
-        short int max = 0;
-        for (unsigned short int i = 0; i < hex.getLength(); i++)
-        {
-
-            if (hex.get(i) == HexStateSpace::EMPTY) { // Empty Field
-                HexStateSpace nextHex(hex); // Copy the state of the table
-                nextHex.set(i, nextPlayer); // Mark the field for the current player
-                short int score = minMaxRecursion(nextHex, nextPlayer, nextLevel);
-
-                if(max < score) {
-                    max = score;
-                }
-                if(score == 0)
-                {
-                    return 1000;
+            if (curHex.get(i) == HexStateSpace::EMPTY)
+            {
+                HexStateSpace nextHex(curHex);
+                nextHex.set(i, nextPlayer);
+                path.push_back(i);
+                short int h_score = minMaxRecursion(nextHex, level + 1, path);
+                //std::cout << toString(path) << ": " << h_score << std::endl;
+                path.pop_back();
+                if(m < h_score) {
+                    m = h_score;
                 }
             }
         }
-        return max;
+        return m;
     }
-
 }
+
+
+
+
+/*short int HexMinMaxControl::minMaxRecursion(HexStateSpace& curHex, const unsigned int &level, std::vector<short int> &path) const
+{
+    short int h_score = curHex.heuristicScore();
+    if(h_score == 0 || level == 3)
+    {
+        return h_score;
+    }
+
+    if(level % 2 == 1) // kék játékos szintje. a kéknek lépett az imént. a piros következik
+    {
+        //HexStateSpace:: color curPlayer = HexStateSpace::BLUE;
+        HexStateSpace:: color nextPlayer = HexStateSpace::RED;
+        short int m = 1000; // min
+        for (unsigned short int i = 0; i < curHex.getLength(); i++)
+        {
+            if (curHex.get(i) == HexStateSpace::EMPTY)
+            {
+                HexStateSpace nextHex(curHex);
+                nextHex.set(i, nextPlayer);
+                path.push_back(i);
+                short int h_score = minMaxRecursion(nextHex, level + 1, path);
+                std::cout << toString(path) << ": " << h_score << std::endl;
+                path.pop_back();
+                if(m > h_score) {
+                    m = h_score;
+                }
+            }
+        }
+        return m;
+    }
+    else //if(level % 2 == 0) // piros játékos szintje. a piros lépett az imént. értékeljük ki. a kék következik
+    {
+        //HexStateSpace:: color curPlayer = HexStateSpace::RED;
+        HexStateSpace:: color nextPlayer = HexStateSpace::BLUE;
+        short int m = 0; // max
+        for (unsigned short int i = 0; i < curHex.getLength(); i++)
+        {
+            if (curHex.get(i) == HexStateSpace::EMPTY)
+            {
+                HexStateSpace nextHex(curHex);
+                nextHex.set(i, nextPlayer);
+                path.push_back(i);
+                short int h_score = minMaxRecursion(nextHex, level + 1, path);
+                std::cout << toString(path) << ": " << h_score << std::endl;
+                path.pop_back();
+                if(m < h_score) {
+                    m = h_score;
+                }
+            }
+        }
+        return m;
+    }
+}*/

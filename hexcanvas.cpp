@@ -347,14 +347,8 @@ void HexCanvas::hintTF()
 void HexCanvas::hintHeur()
 {
     std::cout << "Using Heuristic. Current state info:" << std::endl;
-    HexStateSpace::color oppPlayer = player == HexStateSpace::BLUE ? HexStateSpace::RED : HexStateSpace::BLUE;
-    short int h_player = stateSpace->heuristicScore(player);
-    short int h_oppalyer = stateSpace->heuristicScore(oppPlayer);
-    std::cout << (player == HexStateSpace::BLUE ? "\e[0;34mBlue" : "\e[0;31mRed") << "\e[m" << " palyer's score is: " << h_player << std::endl;
-    std::cout << (player != HexStateSpace::BLUE ? "\e[0;34mBlue" : "\e[0;31mRed") << "\e[m" << " palyer's score is: " << h_oppalyer << std::endl;
-    std::cout << "-- state info end --" << std::endl;
 
-    HexMinMaxControl ctrl(*stateSpace, player, 4);
+    HexMinMaxControl ctrl(*stateSpace, player, (player == HexStateSpace::BLUE ? HexStateSpace::RED : HexStateSpace::BLUE), 2);
 
     double startTime = getWallTime();
     short int hint = ctrl.getWinningStep();

@@ -1,7 +1,7 @@
 #include "hexstatespace.h"
 
 #ifndef _HEXTABLESIZE_
-#define _HEXTABLESIZE_ 5
+#define _HEXTABLESIZE_ 13
 #endif
 
 // ctor
@@ -401,7 +401,11 @@ unsigned short int HexStateSpace::heuristicScore(color player) const
                           distance_map(boost::make_iterator_property_map(d.begin(), boost::get(boost::vertex_index, g))));
     if(d[t] == -1)
     {
-        return 1000; // no path - lost state
+        return +1000; // lost
+    }
+    if(d[t] == 0)
+    {
+        return -1000; // won
     }
     return d[t];
 }
