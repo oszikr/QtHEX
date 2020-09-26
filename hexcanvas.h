@@ -44,6 +44,7 @@ public:
     Hexagon hintBtnHeur; // get heuristic value (purple)
     Hexagon prevBtn; // roll back last move (blue)
     Hexagon clearBtn; // clear table (red)
+    Hexagon loadGameBtn; // load table from file (grey)
 
     explicit HexCanvas(QWidget *parent = 0);
     ~HexCanvas() Q_DECL_OVERRIDE;
@@ -69,6 +70,7 @@ public slots:
     void hintHeur(); // get heuristic value (purple)
     void prev(); // roll back last move (blue)
     void clear(); // clear table (red)
+    void loadGame(); // load table from file (grey)
 
 private:
     double getWallTime() const; // for measure the elapsed time

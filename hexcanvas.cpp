@@ -122,6 +122,9 @@ void HexCanvas::setStateSpace(HexStateSpace* stateSpace)
     tmp.setX(tmp.x() + HEXAGONWIDTH/2);
     clearBtn = Hexagon(tmp, HEXAGONSIZE);
 
+    tmp.setY(tmp.y() + HEXAGONHEIGHT*3/4);
+    tmp.setX(tmp.x() + HEXAGONWIDTH/2);
+    loadGameBtn = Hexagon(tmp, HEXAGONSIZE);
     setMouseTrackingEnabled();
 }
 
@@ -185,6 +188,7 @@ void HexCanvas::paintEvent(QPaintEvent *event)
         paintHex(nextInfoBtn,   QColor(4,188,44),  painter);
         paintHex(prevBtn,       QColor(5,73,188),  painter);
         paintHex(clearBtn,      QColor(184,20,9),  painter);
+        paintHex(loadGameBtn,   QColor(127,127,127),  painter);
     }
 
     painter.setPen(QColor(184,20,9));
@@ -279,10 +283,9 @@ void HexCanvas::mouseReleaseEvent(QMouseEvent *event)
         if(stateSpace->isWinner()) return;
         std::cout << ">>> Clicked hexagon is: " << pointed << "." << std::endl;
         stateSpace->set(pointed, player);
-        if(!stateSpace->isWinner())
-            getPlayerNextPlayer();
-        else
-            std::cout << "The " << (player == HexStateSpace::BLUE ? "\e[0;34mBlue" : "\e[0;31mRed") << "\e[m player won." << std::endl;
+        getPlayerNextPlayer();
+        if(stateSpace->isWinner())
+            std::cout << "The " << (player != HexStateSpace::BLUE ? "\e[0;34mBlue" : "\e[0;31mRed") << "\e[m player won." << std::endl;
         update();
     }
     else
@@ -293,6 +296,7 @@ void HexCanvas::mouseReleaseEvent(QMouseEvent *event)
         else if(isHex(hit, hintBtnHeur))    hintHeur();
         else if(isHex(hit, prevBtn))        prev();
         else if(isHex(hit, clearBtn))       clear();
+        else if(isHex(hit, loadGameBtn))    loadGame();
     }
 }
 
@@ -478,6 +482,23 @@ void HexCanvas::clear()
 {
     stateSpace->clear();
     player = HexStateSpace::BLUE;
+    update();
+}
+
+void HexCanvas::loadGame()
+{
+    std::cout << "The Game will be loaded: examplegame.txt" << std::endl;
+    std::fstream myfile("/home/oszikr/QtProjects/QtHEX/examplegame.txt", std::ios_base::in);
+    int pointed;
+    while (myfile >> pointed)
+    {
+        std::cout << ">>> Pointed hexagon is: " << pointed << "." << std::endl;
+        if(stateSpace->isWinner()) return;
+        stateSpace->set(pointed, player);
+        getPlayerNextPlayer();
+        if(stateSpace->isWinner())
+            std::cout << "The " << (player != HexStateSpace::BLUE ? "\e[0;34mBlue" : "\e[0;31mRed") << "\e[m player won." << std::endl;
+    }
     update();
 }
 

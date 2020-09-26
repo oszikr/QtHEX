@@ -29,3 +29,6 @@ HEADERS  += mainwindow.h \
     hexagon.hpp
 
 FORMS    += mainwindow.ui
+
+DISTFILES += \
+    examplegame.txt
