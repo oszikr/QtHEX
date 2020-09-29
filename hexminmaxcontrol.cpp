@@ -19,7 +19,7 @@ std::vector<short int> HexMinMaxControl::getWinningStep(/*std::set<unsigned shor
 {
     std::cout << ">>> Searching winning strategy for all empty field: " << std::endl;
     // level := 0 -- A player's level
-    int min_i = -1;
+    //int min_i = -1;
     int min = 1000;
     std::vector<short int> path;
     std::vector<short int> result;
@@ -35,7 +35,7 @@ std::vector<short int> HexMinMaxControl::getWinningStep(/*std::set<unsigned shor
             if(h_score < min)
             {
                 min = h_score;
-                min_i = i;
+                //min_i = i;
             }
             result.push_back(h_score);
         }

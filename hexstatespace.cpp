@@ -1,12 +1,10 @@
 #include "hexstatespace.h"
 
-#ifndef _HEXTABLESIZE_
-#define _HEXTABLESIZE_ 13
-#endif
-
 // ctor
-HexStateSpace::HexStateSpace(): SIZE(_HEXTABLESIZE_), LENGTH(SIZE*SIZE), lastField(-1), count(0)
+HexStateSpace::HexStateSpace(): lastField(-1), count(0)
 {
+    SIZE = STable::getSize();
+    LENGTH = SIZE * SIZE;
     stateSpace = new color[SIZE * SIZE];
     for (unsigned short int i = 0; i < SIZE * SIZE; i++)
     {
@@ -15,8 +13,10 @@ HexStateSpace::HexStateSpace(): SIZE(_HEXTABLESIZE_), LENGTH(SIZE*SIZE), lastFie
 }
 
 // copy ctor
-HexStateSpace::HexStateSpace(const HexStateSpace& other): SIZE(_HEXTABLESIZE_), LENGTH(SIZE*SIZE), lastField(-1), count(0)
+HexStateSpace::HexStateSpace(const HexStateSpace& other): lastField(-1), count(0)
 {
+    SIZE = other.SIZE;
+    LENGTH = other.LENGTH;
     stateSpace = new color[SIZE * SIZE];
     for (unsigned short int i = 0; i < SIZE * SIZE; i++)
     {

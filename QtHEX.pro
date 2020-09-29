@@ -18,7 +18,8 @@ SOURCES += main.cpp\
     hexnnetcontrol.cpp \
         mainwindow.cpp \
     hexstatespace.cpp \
-    hexcanvas.cpp
+    hexcanvas.cpp \
+    stable.cpp
 
 HEADERS  += mainwindow.h \
     hexabcontrol.h \
@@ -26,9 +27,11 @@ HEADERS  += mainwindow.h \
     hexnnetcontrol.h \
     hexstatespace.h \
     hexcanvas.h \
-    hexagon.hpp
+    hexagon.hpp \
+    stable.h
 
 FORMS    += mainwindow.ui
 
 DISTFILES += \
-    examplegame.txt
+    examplegame.txt \
+    tablesize.size

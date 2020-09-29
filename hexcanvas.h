@@ -4,9 +4,11 @@
 #include <map>
 #include <cmath>
 #include <QWidget>
+#include <QString>
 #include <QPainter>
 #include <QPaintEvent>
 #include <QTimer>
+#include <QFileDialog>
 #include <algorithm>
 #include "hexstatespace.h"
 #include "hexagon.hpp"
@@ -15,6 +17,9 @@
 #include "hexminmaxcontrol.h"
 
 # define M_PI           3.14159265358979323846
+
+# define PAINTFUNCBUTTONS true
+# define PAINTBORDERS true
 
 class HexCanvas : public QWidget
 {

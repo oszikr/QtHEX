@@ -6,6 +6,7 @@ HexCanvas::HexCanvas(QWidget *parent) : QWidget(parent), HEXAGONSIZE(27), PADDIN
     setMouseTrackingEnabledTimer = new QTimer(this);
     connect(setMouseTrackingEnabledTimer, SIGNAL(timeout()), this, SLOT(setMouseTrackingEnabled()));
     nnetctrl = new HexNnetControl(this);
+    setWindowTitle("HEX");
 }
 
 void HexCanvas::setStateSpace(HexStateSpace* stateSpace)
@@ -23,14 +24,18 @@ void HexCanvas::setStateSpace(HexStateSpace* stateSpace)
 
     this->hexagons.clear();
 
-    setFixedSize(QSize(
+    setGeometry(0,0,
                 HEXAGONWIDTH * stateSpace->getSize() + (HEXAGONWIDTH * (stateSpace->getSize()-1) / 2) + 2*PADDING,
-                HEXAGONHEIGHT * stateSpace->getSize() - (HEXAGONHEIGHT * 1 / 4) * (stateSpace->getSize() - 2)  + 2*PADDING));
+                HEXAGONHEIGHT * stateSpace->getSize() - (HEXAGONHEIGHT * 1 / 4) * (stateSpace->getSize() - 2)  + 2*PADDING);
 
-    if(stateSpace->getSize() < 9)
+    /*if(stateSpace->getSize() < 9)
     {
         this->setFixedSize(QSize(this->width(), this->height()+200));
     }
+    if(stateSpace->getSize() == 7)
+    {
+        this->setFixedSize(QSize(this->width(), 340));
+    }*/
 
     for(unsigned short int i = 0; i < stateSpace->getSize(); i++)
     {
@@ -47,51 +52,54 @@ void HexCanvas::setStateSpace(HexStateSpace* stateSpace)
     }
 
     // create borders
-    upBorderPoints.clear();
-    dnBorderPoints.clear();
-    ltBorderPoints.clear();
-    rtBorderPoints.clear();
-    unsigned short int i = 0;
-    for(unsigned short int j = 0; j < stateSpace->getSize(); j++)
+    if(PAINTBORDERS)
     {
-        QPoint center(PADDING + HEXAGONWIDTH/2  + j*HEXAGONWIDTH + i*HEXAGONWIDTH/2,
-                     (PADDING-3 + HEXAGONHEIGHT/2 + i*HEXAGONHEIGHT*3/4));
-        Hexagon hexagon(center, HEXAGONSIZE);
-        upBorderPoints.push_back(hexagon.d);
-        upBorderPoints.push_back(hexagon.e);
-    }
-    i = stateSpace->getSize() - 1;
-    for(unsigned short int j = 0; j < stateSpace->getSize(); j++)
-    {
-        QPoint center(PADDING+1 + HEXAGONWIDTH/2  + j*HEXAGONWIDTH + i*HEXAGONWIDTH/2,
-                     (PADDING+3 + HEXAGONHEIGHT/2 + i*HEXAGONHEIGHT*3/4));
-        Hexagon hexagon(center, HEXAGONSIZE);
-        dnBorderPoints.push_back(hexagon.b);
-        dnBorderPoints.push_back(hexagon.a);
-    }
-    unsigned short int j = 0;
-    for(unsigned short int i = 0; i < stateSpace->getSize(); i++)
-    {
-        QPoint center(PADDING-3 + HEXAGONWIDTH/2  + j*HEXAGONWIDTH + i*HEXAGONWIDTH/2,
-                     (PADDING+1 + HEXAGONHEIGHT/2 + i*HEXAGONHEIGHT*3/4));
-        Hexagon hexagon(center, HEXAGONSIZE);
-        ltBorderPoints.push_back(hexagon.d);
-        ltBorderPoints.push_back(hexagon.c);
-    }
-    j = stateSpace->getSize() - 1;
-    for(unsigned short int i = 0; i < stateSpace->getSize(); i++)
-    {
-        QPoint center(PADDING+3 + HEXAGONWIDTH/2  + j*HEXAGONWIDTH + i*HEXAGONWIDTH/2,
-                     (PADDING-1+ HEXAGONHEIGHT/2 + i*HEXAGONHEIGHT*3/4));
-        Hexagon hexagon(center, HEXAGONSIZE);
-        rtBorderPoints.push_back(hexagon.f);
-        rtBorderPoints.push_back(hexagon.a);
-    }
-    upBorderPoints.push_front(ltBorderPoints.first());
-    rtBorderPoints.push_back(dnBorderPoints.last());
+        upBorderPoints.clear();
+        dnBorderPoints.clear();
+        ltBorderPoints.clear();
+        rtBorderPoints.clear();
+        unsigned short int i = 0;
+        for(unsigned short int j = 0; j < stateSpace->getSize(); j++)
+        {
+            QPoint center(PADDING + HEXAGONWIDTH/2  + j*HEXAGONWIDTH + i*HEXAGONWIDTH/2,
+                         (PADDING-3 + HEXAGONHEIGHT/2 + i*HEXAGONHEIGHT*3/4));
+            Hexagon hexagon(center, HEXAGONSIZE);
+            upBorderPoints.push_back(hexagon.d);
+            upBorderPoints.push_back(hexagon.e);
+        }
+        i = stateSpace->getSize() - 1;
+        for(unsigned short int j = 0; j < stateSpace->getSize(); j++)
+        {
+            QPoint center(PADDING+1 + HEXAGONWIDTH/2  + j*HEXAGONWIDTH + i*HEXAGONWIDTH/2,
+                         (PADDING+3 + HEXAGONHEIGHT/2 + i*HEXAGONHEIGHT*3/4));
+            Hexagon hexagon(center, HEXAGONSIZE);
+            dnBorderPoints.push_back(hexagon.b);
+            dnBorderPoints.push_back(hexagon.a);
+        }
+        unsigned short int j = 0;
+        for(unsigned short int i = 0; i < stateSpace->getSize(); i++)
+        {
+            QPoint center(PADDING-3 + HEXAGONWIDTH/2  + j*HEXAGONWIDTH + i*HEXAGONWIDTH/2,
+                         (PADDING+1 + HEXAGONHEIGHT/2 + i*HEXAGONHEIGHT*3/4));
+            Hexagon hexagon(center, HEXAGONSIZE);
+            ltBorderPoints.push_back(hexagon.d);
+            ltBorderPoints.push_back(hexagon.c);
+        }
+        j = stateSpace->getSize() - 1;
+        for(unsigned short int i = 0; i < stateSpace->getSize(); i++)
+        {
+            QPoint center(PADDING+3 + HEXAGONWIDTH/2  + j*HEXAGONWIDTH + i*HEXAGONWIDTH/2,
+                         (PADDING-1+ HEXAGONHEIGHT/2 + i*HEXAGONHEIGHT*3/4));
+            Hexagon hexagon(center, HEXAGONSIZE);
+            rtBorderPoints.push_back(hexagon.f);
+            rtBorderPoints.push_back(hexagon.a);
+        }
+        upBorderPoints.push_front(ltBorderPoints.first());
+        rtBorderPoints.push_back(dnBorderPoints.last());
 
-    upBorderPoints.push_back(rtBorderPoints.first());
-    ltBorderPoints.push_back(dnBorderPoints.first());
+        upBorderPoints.push_back(rtBorderPoints.first());
+        ltBorderPoints.push_back(dnBorderPoints.first());
+    }
 
     // func buttons
     QPoint tmp(
@@ -182,13 +190,15 @@ void HexCanvas::paintEvent(QPaintEvent *event)
             paintHex(hexagon, qcolor, painter);
 
         }
-        paintHex(hintBtnAB,     QColor(245,245,0), painter);
-        paintHex(hintBtnTF,     QColor(255,165,0), painter);
-        paintHex(hintBtnHeur,   QColor(128,0,128), painter);
-        paintHex(nextInfoBtn,   QColor(4,188,44),  painter);
-        paintHex(prevBtn,       QColor(5,73,188),  painter);
-        paintHex(clearBtn,      QColor(184,20,9),  painter);
-        paintHex(loadGameBtn,   QColor(127,127,127),  painter);
+        if(PAINTFUNCBUTTONS) {
+            paintHex(hintBtnAB,     QColor(245,245,0), painter);
+            paintHex(hintBtnTF,     QColor(255,165,0), painter);
+            paintHex(hintBtnHeur,   QColor(128,0,128), painter);
+            paintHex(nextInfoBtn,   QColor(4,188,44),  painter);
+            paintHex(prevBtn,       QColor(5,73,188),  painter);
+            paintHex(clearBtn,      QColor(184,20,9),  painter);
+            paintHex(loadGameBtn,   QColor(127,127,127),  painter);
+        }
     }
 
     painter.setPen(QColor(184,20,9));
@@ -487,8 +497,10 @@ void HexCanvas::clear()
 
 void HexCanvas::loadGame()
 {
-    std::cout << "The Game will be loaded: examplegame.txt" << std::endl;
-    std::fstream myfile("/home/oszikr/QtProjects/QtHEX/examplegame.txt", std::ios_base::in);
+    QString qFileName = QFileDialog::getOpenFileName(this, tr("Open HEX file"), "../QtHEX/", tr("HEX files (*.txt *.hex)"));
+    std::string fileName = qFileName.toStdString();
+    std::cout << "The Game will be loaded:" << fileName << std::endl;
+    std::fstream myfile(fileName, std::ios_base::in);
     int pointed;
     while (myfile >> pointed)
     {
